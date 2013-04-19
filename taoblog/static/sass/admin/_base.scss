@@ -1,0 +1,12 @@
+$main-color      : #444;
+$highlight-color : #00ab6f;
+$grey            : #E2E2E2;
+
+$min-total-width   : 600px;
+$min-sidebar-width : 150px;
+$min-main-width    : 400px;
+
+$span: 40px;
+
+@import "compass/css3/user-interface";
+@import "compass/css3";

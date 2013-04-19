@@ -1,0 +1,57 @@
+@import "base";
+
+@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700|Varela+Round);
+
+body {
+    color: $main-color;
+    font: 14px/1.62 "Varela Round", "Lucida Grande", sans-serif;
+    margin: 0;
+    background-color: #FEFEFE;
+    border-left: 4px solid $highlight-color;
+}
+
+#wrapper {
+    width: $total-width;
+    margin: 0 auto;
+}
+
+#top {
+    overflow: hidden;
+    margin-bottom: 72px;
+    padding-top: 8px;
+    nav {
+        overflow: hidden;
+        ul {
+            float: right;
+            li {
+                display: inline;
+                margin-left: 24px;
+                &:first-child {
+                    margin-left: 0;
+                }
+            }
+            li.focus {
+                border-bottom: solid 4px $highlight-color;
+            }
+        }
+    }
+}
+
+#bottom-footer {
+    border-top: dotted 1px #DDD;
+    padding-top: 0;
+    margin-top: 72px;
+    padding-bottom: 24px;
+    text-align: right;
+    overflow: hidden;
+    font-size: $smaller-font-size;
+    color: $lighter-color;
+    ul {
+        list-style: none;
+        margin-top: 0;
+        li {
+            display: inline;
+            margin-left: 24px;
+        }
+    }
+}

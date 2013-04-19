@@ -1,0 +1,346 @@
+@import "admin/base";
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font: normal 14px/1.4 "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, sans-serif;
+    color: $main-color;
+}
+
+#topbar {
+    border-bottom    : 1px solid $grey;
+    position         : fixed;
+    width            : 100%;
+    line-height      : $span;
+    overflow         : hidden;
+    padding          : 0 10%;
+    background-color : $highlight-color;
+    a {
+        color: white;
+        text-decoration: none;
+        &:visited {
+            color: white;
+        }
+    }
+    z-index: 1;
+}
+
+#wrapper {
+    height: 100%;
+    min-width: $min-total-width;
+    margin: 0 10%;
+}
+
+a {
+    color: $highlight-color;
+    text-decoration: none;
+}
+
+.left-column {
+    min-width: $min-sidebar-width;
+}
+
+.right-column {
+    min-width: $min-main-width;
+    overflow: hidden;
+    margin-left: $min-sidebar-width;
+}
+
+#home {
+    float: left;
+    a {
+        display: block;
+        padding: 0 8px;
+    }
+}
+
+#toolbar {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+    font-weight: bold;
+    li {
+        margin       : 0;
+        padding      : 0;
+        display      : inline-block;
+        border-left  : 1px solid transparent;
+        border-right : 1px solid transparent;
+        a {
+            padding: 0 $span;
+            display: inline-block;
+            margin: 0;
+        }
+        &:hover {
+            border-left: 1px solid $grey;
+            border-right: 1px solid $grey;
+        }
+    }
+}
+
+#main {
+    padding-top: $span * 2;
+    padding-left: $span;
+    padding-bottom: $span;
+}
+
+#sidebar {
+    padding-top  : $span * 2;
+    border-right : 1px solid $grey;
+    position     : fixed;
+    height       : 100%;
+    menu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li {
+            margin: 0;
+            a {
+                display: block;
+                padding: 8px;
+                color: inherit;
+            }
+            &.cut-off {
+                margin-bottom: 64px;
+            }
+            &:hover {
+                background-color: $grey;
+            }
+            &.highlight {
+                background-color: $grey;
+                a {
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+}
+
+#recent-posts {
+    float: left;
+}
+
+#recent-draft {
+    float: left;
+}
+
+#stats {
+    float: left;
+}
+
+ul.browser-dropdown {
+    background-color: #cce6dd;
+    list-style: none;
+    padding: 0;
+    li {
+        padding: 6px 8px;
+    }
+}
+
+table.browser {
+    width: 100%;
+    margin: 0 0 20px 0;
+    cursor: default;
+    th, td {
+        padding: 12px 8px;
+        text-align: left;
+    }
+    thead {
+        border-bottom: 1px solid $grey;
+    }
+    tbody {
+        tr:hover {
+            background-color: $grey;
+        }
+        tr {
+            border-bottom: 1px solid $grey;
+            @include user-select(none);
+        }
+        tr.selected {
+            background-color: $highlight-color;
+            color: white;
+            td.tags span {
+                color: $main-color;
+            }
+        }
+        td.title {
+            width: 80%;
+            img {
+                padding-left: 8px;
+            }
+        }
+        td.tags {
+            width: 20%;
+            font-size: 12px;
+            span {
+                @include border-radius(3px);
+                background-color: $grey;
+                padding: 2px 6px;
+                margin: 0 2px;
+            }
+        }
+        td.date {
+            white-space: nowrap;
+        }
+        td.draft-title {
+            width: 20px;
+            white-space: nowrap;
+        }
+        td.draft-text {
+            div {
+                width         : 200px;
+                white-space   : nowrap;
+                overflow      : hidden;
+                text-overflow : ellipsis;
+            }
+        }
+        td.draft-date {
+            white-space: nowrap;
+        }
+    }
+}
+
+a#more-posts {
+    margin          : 0 auto;
+    width           : 32px;
+    height          : 32px;
+    display         : block;
+    text-decoration : none;
+    color           : inherit;
+}
+
+#sidebar menu a {
+    text-decoration: none;
+}
+
+menu.horizontal {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+menu.horizontal > li {
+    display: inline;
+    margin-left: 20px;
+}
+
+menu.horizontal > li:first-child {
+    margin-left: 0;
+}
+
+menu.two-column > li {
+    float: right;
+}
+
+menu.two-column > li:first-child {
+    float: left;
+}
+
+menu.toolbar {
+    margin-top: 0;
+    li {
+        display: inline;
+        margin-right: 15px;
+        &.rightmost {
+            margin-left: 20px;
+            margin-right: 0;
+        }
+    }
+    li:last-child {
+        margin-right: 0;
+    }
+    list-style: none;
+    padding: 0;
+
+
+}
+
+button.filled, button.hollow {
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+}
+
+button.filled {
+    padding: 6px 18px;
+    background-color: #DDD;
+    border: none;
+    color: inherit;
+}
+
+button.hollow {
+    padding: 4px 16px;
+    background-color: inherit;
+    border: 2px solid #888;
+    color: #888;
+}
+
+button.filled-highlight {
+    color: $highlight-color;
+}
+
+button.hollow-highlight {
+    border: 2px solid $highlight-color;
+    color: $highlight-color;
+}
+
+#compose-form {
+    display: block;
+    min-width: $min-main-width;
+}
+
+div.post-editor {
+    $radius: 6px;
+    .input-box {
+        background-color : transparent;
+        border           : 1px solid $grey;
+        word-spacing     : inherit;
+        letter-spacing   : inherit;
+        font             : inherit;
+
+        @include box-sizing(border-box);
+        box-sizing    : border-box;
+        outline-style : none;
+    }
+
+    input.title {
+        line-height   : 2em;
+        margin-bottom : 2em;
+        font-weight   : bold;
+        padding       : 0.5em 1em;
+        width         : 100%;
+    }
+
+    div.text {
+        display       : block;
+        height        : 450px;
+        /* font-family   : inherit; */
+        border        : 1px solid $grey;
+        border-bottom : 1px solid $grey;
+        padding       : 1em;
+        width         : 100%;
+    }
+}
+
+
+div#flash {
+    position   : fixed;
+    right: 0;
+    text-align : center;
+    z-index    : 990;
+    p {
+        padding          : 4px 8px;
+        font-weight      : bold;
+        color            : white;
+        @include single-box-shadow;
+    }
+    p.error {
+        background-color: #b0260f;
+    }
+    p.success {
+        background-color: #8a2;
+    }
+}

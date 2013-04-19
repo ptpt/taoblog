@@ -1,0 +1,34 @@
+@import "base";
+
+a {
+    text-decoration: none;
+    color: inherit;
+    &:hover {
+        color: $highlight-color;
+    }
+}
+
+*::selection {
+    background-color: $highlight-color;
+    color: white;
+    text-shadow: none;
+}
+
+div.flash {
+    text-align: center;
+    border: 1px solid $border-line-color;
+    p.error {
+    }
+    p.success {
+    }
+}
+
+button.text-link {
+    font: inherit;
+    color: inherit;
+    border: none;
+    background-color: inherit;
+    cursor: pointer;
+    padding: 0;
+    border-bottom: solid 1px $border-line-color;
+}

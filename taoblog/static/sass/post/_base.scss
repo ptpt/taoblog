@@ -1,0 +1,13 @@
+$darker-color      : #222;
+$main-color        : #444;
+$lighter-color     : #888;
+$border-line-color : #DDD;
+$highlight-color   : #EE5544;
+$smaller-font-size : 12px;
+$total-width       : 700px;
+
+$left-column-size: 100px;
+$space-column-size: 18px;
+$right-column-size: $total-width - $left-column-size - $space-column-size;
+
+@import "compass/css3"

@@ -1,0 +1,94 @@
+@import "base";
+
+div.tagcloud {
+    float: right;
+    width: $total-width/2;
+    margin-bottom: 32px;
+    font-size: $smaller-font-size;
+    a {
+        float: left;
+        padding: 2px 8px;
+        margin: 2px;
+        border: solid 1px $border-line-color;
+    }
+    a.focus {
+        color: white;
+        background-color: $highlight-color;
+        border-color: $highlight-color;
+    }
+}
+
+div.archive {
+    clear: both;
+    h2 {
+        width: $left-column-size;
+        text-align: right;
+        color: $lighter-color;
+    }
+    ul {
+        list-style: none;
+        line-height: normal;
+        padding: 0;
+    }
+    /* under ul */
+    li {
+        margin: 32px 0;
+        overflow: hidden;
+    }
+
+    /* under ul li */
+    time {
+        float: left;
+        color: $lighter-color;
+        width: $left-column-size;
+        text-align: right;
+    }
+    /* under ul li */
+    div.tag {
+        margin-left: $space-column-size;
+        float: left;
+        color: $lighter-color;
+        width: $right-column-size;
+        a {
+            float: left;
+            margin: 0 8px;
+            &:first-child {
+                margin-left: 0;
+            }
+            &.focus {
+                color: $highlight-color;
+                border-color: $highlight-color;
+            }
+        }
+    }
+    /* under ul li */
+    h3 {
+        font-weight: normal;
+        color: black;
+        margin-left: $left-column-size + $space-column-size;
+        padding-top: 6px;
+        clear: both;
+    }
+}
+
+nav.right-pagination {
+    overflow: hidden;
+    text-align: right;
+    font-size: $smaller-font-size;
+    padding: 4px;
+    a {
+        border: solid 1px $border-line-color;
+        padding: 4px;
+    }
+    span {
+        color: $lighter-color;
+        border: solid 1px $border-line-color;
+        padding: 4px;
+    }
+    .previous {
+        margin-right: 4px;
+    }
+    .next {
+        margin-left: 4px;
+    }
+}

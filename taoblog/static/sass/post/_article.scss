@@ -1,0 +1,137 @@
+@import "base";
+
+h3.tagged {
+    text-align: center;
+    font-weight: normal;
+    span {
+        border-bottom: solid 4px $highlight-color;
+        font-style: italic;
+    }
+}
+
+article.overview {
+    border-bottom: solid 1px $border-line-color;
+    margin: 72px 0;
+}
+
+article.post {
+    header {
+        margin: 36px 0;
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: $darker-color;
+        }
+    }
+    div.meta {
+        color: $lighter-color;
+        margin: 36px 0;
+        text-align: right;
+        p {
+            line-height: normal;
+            margin: 4px 0;
+        }
+        form {
+            margin: 16px 0;
+            button {
+                color: $main-color;
+            }
+            button:hover {
+                border-bottom: none;
+                background-color: $highlight-color;
+                color: white;
+            }
+        }
+        a {
+            color: $main-color;
+            font-style: italic;
+            border-bottom: solid 1px $border-line-color;
+            &:hover {
+                border-bottom: none;
+                background-color: $highlight-color;
+                color: white;
+            }
+        }
+    }
+    div.content {
+        line-height: 1.8em;
+        a {
+            color: black;
+            border-bottom: solid 1px $border-line-color;
+            &:hover {
+                border-bottom: none;
+                background-color: $highlight-color;
+                color: white;
+            }
+        }
+        p {
+            text-align: justify;
+        }
+        hr {
+            text-align: center;
+            border-color: transparent;
+            &:after {
+                content: "......";
+                letter-spacing: 2em;
+            }
+        }
+        code, pre {
+            @include border-radius(6px);
+            font-family: "Ubuntu Mono", monospace;
+            background-color: #F2F2F2;
+            border: solid 1px $border-line-color;
+        }
+        code {
+            padding: 0 4px;
+        }
+        pre {
+            padding: 2px 6px;
+            line-height: 1.62em;
+        }
+        pre code {
+            border: none;
+        }
+        div.highlight {
+            @import "highlight";
+        }
+    }
+}
+
+nav.pagination {
+    overflow: hidden;
+    .previous {
+        float: left;
+    }
+    .next {
+        float: right;
+    }
+}
+
+form.preview {
+    border-top: solid 4px $highlight-color;
+    border-bottom: solid 4px $highlight-color;
+    padding: 16px;
+    width: 100%;
+    overflow: hidden;
+    div {
+        margin: 12px 0;
+    }
+    input {
+        @include border-radius(3px);
+        font-family: inherit;
+        border: solid 1px $border-line-color;
+        outline: none;
+    }
+    label {
+        font-weight: bold;
+    }
+    menu {
+        float: right;
+        list-style: none;
+        margin: 0;
+        li {
+            display: inline;
+            margin-left: 16px;
+        }
+    }
+}
