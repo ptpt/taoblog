@@ -3,7 +3,8 @@ STATIC = $(SRC)/static
 TEMPLATES = $(SRC)/templates
 
 
-.PHONY: example clean wc tests sync upload
+.PHONY: demo example clean wc tests
+
 
 demo:
 	python run.py
