@@ -1,0 +1,50 @@
+{% extends 'admin/layout.html' %}
+
+{% block main %}
+                <table class="browser" unselectable="on" data-status="{{ status }}">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Tags</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                        <tr class="item" data-id="{{ post.id }}" data-status="{{ post.status }}">
+                            <td class="title">{#
+                                #}{{ post.title|truncate(64, killwords=True) }}
+                                {%- if post.draft -%}
+                                <img class="draft" src="{{ url_for('static', filename='img/pencil3.png') }}">
+                                {%- endif -%}
+                                {%- if post.status == 1 -%}
+                                <img class="private" src="{{ url_for('static', filename='img/eye-blocked.png') }}">
+                                {%- endif -%}
+                            </td>
+                            <td class="tags">
+                                {%- for tag in post.tags -%}
+                                <span>{{ tag }}</span>
+                                {%- endfor -%}
+                            </td>
+                            <td class="date"><time datetime="{{ post.created_at|string + 'Z' }}"></time></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a id="more-posts" href="#" style="{{ 'display:none;' if not more }}{#
+                #}background-image:url({{ url_for('static', filename='img/arrow-down-alt1.png') }})"></a>
+{% endblock %}
+
+{% block script %}
+            {% if config['DEBUG'] %}
+            var module = '{{ url_for('static', filename='coffee/admin/src/posts.js') }}';
+            {% else %}
+            var module = '{{ url_for('static', filename='js/taoblog/admin/1.0.0/posts.js') }}';
+            {% endif %}
+
+            seajs.use(['$', module], function($, setupPosts){
+              $(function () {
+                setupPosts();
+              });
+            });
+{% endblock %}

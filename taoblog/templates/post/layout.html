@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block head %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
+        <link rel="alternate" type="application/atom+xml" href="{{ url_for('post.atom_feed') }}" />
+        <title>{% block title %}{{ localize('Home') }}{% endblock %}</title>
+{% endblock %}
+
+{% block body%}
+        <div id="wrapper">
+            <header id="top">
+                <nav>
+                    <ul>
+                    {% block nav %}
+                        <li><a href="{{ url_for('post.archive') }}">{{ localize('Archive') }}</a></li>
+                        <li><a href="{{ url_for('post.render_posts') }}">{{ localize('Home') }}</a></li>
+                    {% endblock %}
+                    </ul>
+                </nav>
+            </header>
+            {% for category, msg in get_flashed_messages(with_categories=true) %}
+            {% if loop.first %}
+            <div class="flash">
+            {% endif %}
+                <p class="{{ category }}">{{ localize(msg) }}</p>
+            {% if loop.last %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% block main %}
+            {% endblock %}
+            <footer id="bottom-footer">
+                <ul>
+                    <li>&copy; 2012 <a href="http://taopeng.me">Tao Peng</a></li>
+                    {% for locale in g.locales if locale!=g.locale -%}
+                    {%- if loop.first -%}
+                    <li>
+                    {%- endif -%}
+                    <a href="{{ url_for('set_cookie', locale=locale) }}">{{ get_locale_name(locale) }}</a>{{ '' if loop.last else ' | '}}
+                    {%- if loop.last -%}</li>{%- endif -%}
+                    {%- endfor %}
+                    {% if g.is_admin -%}
+                    <li><a href="{{ url_for('admin.render_dashboard') }}">{{ localize('Admin') }}</a></li>
+                    {%- endif %}
+                    {% if g.is_login -%}
+                    <li><a href="{{ url_for('account.profile') }}">{{ localize('My Account') }}</a></li>
+                    <li><a href="{{ url_for('session.logout', sid=session['sid']) }}">{{ localize('Logout') }}</a></li>
+                    {%- else -%}
+                    <li><a href="{{ url_for('session.render_login') }}">{{ localize('Login') }}</a></li>
+                    {%- endif %}
+                </ul>
+            </footer>
+        </div>
+{% endblock %}

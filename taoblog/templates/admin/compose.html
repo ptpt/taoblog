@@ -1,0 +1,63 @@
+{% extends 'admin/layout.html' %}
+
+{% block menus %}
+            <li><a id="Discard" href="{{ request.referrer }}">Discard</a></li>
+            {% if post %}
+            <li>
+                {%- if post.draft -%}{#
+                ##################   editing a post with draft saved ##################
+                #}<a id="save-draft" href="#" data-action="{{ url_for('post.update_draft', draft_id=post.draft.id) }}" >{{ 'Save' }}</a>
+                {%- else -%}{#
+                ##################   editing a post                  ##################
+                #}<a id="save-draft" href="#" data-action="{{ url_for('post.create_draft') }}" >{{ 'Save as Draft' }}</a>
+                {%- endif -%}
+            </li>
+            {% else %}
+            <li>
+                {%- if draft -%}{#
+                ##################   editing a draft                 ##################
+                #}<a id="save-draft" href="#" data-action="{{ url_for('post.update_draft', draft_id=draft.id) }}" >{{ 'Save' }}</a>
+                {%- else -%}{#
+                ##################   editing a scratch               ##################
+                #}<a id="save-draft" href="#" data-action="{{ url_for('post.create_draft') }}" >{{ 'Save as Draft' }}</a>
+                {%- endif -%}
+            </li>
+            {% endif %}
+            <li><a id="new-post" href="#" data-action="{{ url_for('post.prepare' )}}">{{ 'Create Post' }}</a></li>
+{% endblock %}
+
+{% block main %}
+                <form id="compose-form">
+                    {% if post %}
+                        {%- if post.draft -%}
+                            {%- set title, text = post.draft.title, post.draft.text -%}
+                        {%- else -%}
+                            {%- set title, text = post.title, post.text -%}
+                        {%- endif -%}
+                    <input type="hidden" name="post-id" value="{{ post.id }}">
+                    {% endif %}
+                    {% if draft %}
+                    {% set title, text = draft.title, draft.text %}
+                    <input type="hidden" name="draft-id" value="{{ draft.id }}">
+                    {% endif %}
+                    <div class="post-editor">
+                        <input class="title input-box" tabindex="1" name="title" type="text" value="{{ title }}"
+                               autocomplete="off" placeholder="{{ 'Title' }}">
+                        <textarea style="display:none" name="text">{{ text }}</textarea>
+                        <div class="text" tabindex="2" id="editor"></div>
+                    </div>
+                </form>
+{% endblock %}
+
+{% block script %}
+            {% if config['DEBUG'] %}
+            var module = '{{ url_for('static', filename='coffee/admin/src/compose.js') }}';
+            {% else %}
+            var module = '{{ url_for('static', filename='js/taoblog/admin/1.0.0/compose.js') }}';
+            {% endif %}
+            seajs.use(['$', module], function($, setupCompose){
+                $(function () {
+                    setupCompose();
+                });
+            });
+{% endblock %}

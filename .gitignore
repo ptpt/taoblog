@@ -1,0 +1,14 @@
+*.pyc
+*.db
+*.sqlite*
+*.jpg
+*.cfg
+*.js
+*.css
+
+.sass-cache
+/instances
+/TODO.org
+/bin
+/.syncignore
+/utils

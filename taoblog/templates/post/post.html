@@ -1,0 +1,27 @@
+{% extends "post/layout.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block main %}
+            {% block preview %}
+            {% endblock %}
+            <article class="post">
+                <header>
+                    <h1><a href="{{ url_for('post.render_post_by_permalink', slug=post.slug, year=post.created_year, month=post.created_month) if post.slug else '#' }}">{{ post.title or 'Untitled' }}</a></h1>
+                </header>
+                <div class="content">
+                    {{ post.content|safe }}
+                </div>
+                {% if not overview and not draft -%}
+                <div class="meta">
+                    <p>{{ localize('posted on [date]', date=post.created_at.date())|safe }}</p>
+                    {% if post.tags %}
+                    <p>{{ localize('tagged with [tags]', tags=post.tags)|safe }}</p>
+                    {% endif %}
+                    {% if g.is_admin -%}
+                    {{ localize('edit or delete [post]', post=post)|safe }}
+                    {%- endif %}
+                </div>
+                {%- endif %}
+            </article>
+{% endblock %}

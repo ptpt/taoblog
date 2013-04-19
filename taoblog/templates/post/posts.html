@@ -1,0 +1,34 @@
+{%- extends "post/layout.html" -%}
+
+{% block nav %}
+                        <li><a href="{{ url_for('post.archive') }}">{{ localize('Archive') }}</a></li>
+                        <li class="focus"><a href="{{ url_for('post.render_posts') }}">{{ localize('Home') }}</a></li>
+{% endblock %}
+
+{% block main %}
+            {% if tags -%}
+            <h3 class="tagged">{{ localize('posts tagged with [tags]', tags=tags)|safe }}</h3>
+            {%- endif %}
+
+            {% for post in posts %}
+            <article class="post overview">
+                <header>
+                    <h1><a href="{{ url_for('post.render_post_by_permalink', slug=post.slug, year=post.created_year, month=post.created_month) if post.slug else '#' }}">{{ post.title or 'Untitled' }}</a></h1>
+                </header>
+                <div class="content">
+                    {{ post.content|safe }}
+                </div>
+            </article>
+            {% endfor %}
+
+            {% if not pagination.single %}
+            <nav class="pagination">
+                {% if pagination.prev_url -%}
+                <a class="previous" href="{{ pagination.prev_url }}">{{ localize('Previous Page') }}</a>
+                {%- endif -%}
+                {%- if pagination.next_url -%}
+                <a class="next" href="{{ pagination.next_url }}">{{ localize('Next Page') }}</a>
+                {%- endif %}
+            </nav>
+            {% endif %}
+{% endblock %}

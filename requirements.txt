@@ -1,0 +1,7 @@
+SQLAlchemy
+misaka
+pygments
+Flask
+Flask-OpenID
+Flask-OAuth
+rauth

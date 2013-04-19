@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block head %}
+        <title>Profile</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body %}
+        <div id="container">
+            {% for category, msg in get_flashed_messages(with_categories=true) -%}
+            {%- if loop.first -%}
+            <div class="flash">
+            {%- endif %}
+                <p class="{{ category }}">{{ msg }}</p>
+            {% if loop.last -%}
+            </div>
+            {%- endif -%}
+            {%- endfor %}
+            <div class="dialog">
+                {############################## delete account
+                #}<form id="delete-form" action="{{ url_for('account.delete_user') }}" method="POST">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <input type="hidden" name="sid" value="{{ session['sid'] }}">
+                </form>
+                {############################## logout
+                #}<form id="logout-form" action="{{ url_for('session.logout') }}" method="POST">
+                    <input type="hidden" name="sid" value="{{ session['sid'] }}">
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+                {############################## update or create account
+                #}<form id="save-form" action="{{ url_for('account.create_user') if 'identity' in session and 'provider' in session else url_for('account.update_user') }}" method="POST">
+                    <div class="field">
+                        <label>Name</label>
+                        <input type="text" name="name" value="{{ request.args['name'] or session['name'] }}">
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ request.args['email'] or session['email'] }}">
+                    </div>
+                    <div class="field">
+                        <label>Website</label>
+                        <input type="url" name="website" value="{{ request.args['website'] or session['account.website'] }}">
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+                <menu type='toolbar'>
+                    {% if 'token' not in session -%}
+                    <li class="delete"><a href="#" onClick="confirm('Cancel your account?') && document.forms['delete-form'].submit()">Cancel my Account</a></li>
+                    {%- endif %}
+                    <li><input type="submit" value="{{ 'Create' if 'identity' in session and 'provider' in session else 'Update' }}" form="save-form"></li>
+                    <li><input type="submit" value="Log out" form="logout-form"></li>
+                </menu>
+            </div>
+        </div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block head %}
+        <title>Login</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body %}
+        <div id="container">
+            {% for category, msg in get_flashed_messages(with_categories=true) %}
+            {%- if loop.first -%}
+            <div class="flash">{%- endif %}
+                <p class="{{ category }}">{{ msg }}</p>
+            {% if loop.last -%}
+            </div>
+            {%- endif -%}
+            {% endfor %}
+            <div class="dialog">
+                <form id="google-openid" method="POST" action="{{ url_for('openid.openid_login') }}">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <input type="hidden" name="openid" value="https://www.google.com/accounts/o8/id">
+                </form>
+                <form id="yahoo" method="POST" action="{{ url_for('openid.openid_login') }}">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <input type="hidden" name="openid" value="https://www.yahoo.com">
+                </form>
+                {% if config['TWITTER_CONSUMER'] %}
+                <form id="twitter" method="GET" action="{{ url_for('oauth_twitter.login') }}">
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+                {% endif %}
+                {% if config['FACEBOOK_CONSUMER'] %}
+                <form id="facebook" method="GET" action="{{ url_for('oauth_facebook.login') }}">
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+                {% endif %}
+                {% if config['GOOGLE_CONSUMER'] %}
+                <form id="google" method="GET" action="{{ url_for('oauth_google.login') }}">
+                </form>
+                {% endif %}
+                <p>Log in with:</p>
+                <ul>
+                    <li><button title="Google" class="icon icon-google" type="submit" form="google-openid"></button></li>
+                    <li><button title="Yahoo" class="icon icon-yahoo" type="submit" form="yahoo"></button></li>
+                    {% if config['TWITTER_CONSUMER'] %}
+                    <li><button title="Twitter" class="icon icon-twitter" type="submit" form="twitter"></button></li>
+                    {% endif %}
+                    {% if config['FACEBOOK_CONSUMER'] %}
+                    <li><button title="Facebook" class="icon icon-facebook" type="submit" form="facebook"></button></li>
+                    {% endif %}
+                    {% if config['GOOGLE_CONSUMER'] %}
+                    <li><button title="Google" class="icon icon-google" type="submit" form="google"></button></li>
+                    {% endif %}
+                </ul>
+                <p>Or OpenID:</p>
+                <form method="POST" action="">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <input type="text" name="openid">
+                    <input type="submit" value="Login">
+                </form>
+                <p>Or <a style="color: black; text-decoration: none;" href="{{ next }}">GO BACK</a></p>
+            </div>
+        </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "post/post.html" %}
+
+{% block preview %}
+            <form class="preview">
+                <input type="hidden" name="draft-id" value="{{ draft.id }}">
+                {% if post.id is not none -%}
+                <input type="hidden" name="post-id" value="{{ post.id }}">
+                {%- endif %}
+                <div>
+                    <label>Permalink:</label>
+                    <span>{{ url_for('post.render_posts', year=post.created_year, month=post.created_month, _external=True) }}</span>
+                    <input type="input" name="slug" autocomplete="off" value="{{ post.slug }}">
+                </div>
+                <div>
+                    <label>Tags:</label>
+                    <input type="input" name="tags" autocomplete="off" value="{{ draft.post.tags | join(' ') }}">
+                </div>
+                <menu type="toolbar" class="right-column">
+                    <li><a href="{{ url_for('post.edit_draft', draft_id=draft.id) }}">{{ localize('edit') }}</a></li>
+                    {% if post.id is none %}{#
+                    ################## create post ################
+                    #}<li><button type="submit" formmethod="POST" formaction="{{ url_for('post.create_post') }}">{{ localize('publish') }}</button></li>
+                    {% else %}{#
+                    ################## update post ################
+                    #}<li><button type="submit" formmethod="POST" formaction="{{ url_for('post.update_post', post_id=post.id) }}">{{ localize('update') }}</button></li>
+                    {% endif %}
+                </menu>
+            </form>
+{% endblock %}

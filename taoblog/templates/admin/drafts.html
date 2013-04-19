@@ -1,0 +1,38 @@
+{% extends 'admin/layout.html' %}
+
+{% block main %}
+                <table class="browser" unselectable="on">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Text</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for draft in drafts %}
+                        <tr class="item" data-id="{{ draft.id }}">
+                            <td class="draft-title">{{ draft.title|truncate(64, killwords=True) }}</td>
+                            <td class="draft-text">{{ draft.text|truncate(64, killwords=True) }}</td>
+                            <td class="draft-date"><time datetime="{{ draft.saved_at|string + 'Z' }}"></time></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a id="more-posts" href="#" style="{{ 'display:none;' if not more }}{#
+                #}background-image:url({{ url_for('static', filename="img/arrow-down-alt1.png") }})"></a>
+{% endblock %}
+
+{% block script %}
+            {% if config['DEBUG'] %}
+            var module = '{{ url_for('static', filename='coffee/admin/src/drafts.js') }}';
+            {% else %}
+            var module = '{{ url_for('static', filename='js/taoblog/admin/1.0.0/drafts.js') }}';
+            {% endif %}
+
+            seajs.use(['$', module], function($, setupDrafts){
+              $(function () {
+                setupDrafts();
+              });
+            });
+{% endblock %}

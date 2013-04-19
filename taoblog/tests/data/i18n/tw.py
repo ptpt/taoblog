@@ -1,0 +1,2 @@
+NAME = 'Taiwan'
+FALLBACK = 'cn'
