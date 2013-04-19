@@ -76,7 +76,7 @@ server_name = 'example.com' # default port 80
 
 ### `DEBUG`
 
-Boolean, very useful for development.
+If True, it will render debug information when you get exceptions.
 
 
 
@@ -117,7 +117,7 @@ For example:
 
 ```python
 ADMIN_EMAIL = 'your@email.com'
-ADMIN_EMAIL = '*'
+ADMIN_EMAIL = '*'        ## WARN: it means EVERY registered users can manage your blog
 ADMIN_EMAIL = ['jerry@email.com', 'tom@gmail.com']
 ```
 
