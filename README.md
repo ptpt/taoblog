@@ -45,7 +45,7 @@ Configuration
 
 --------------------------
 
-**`SECRET_KEY`**
+### `SECRET_KEY`
 
 Keep it complex and secret.
 
@@ -59,7 +59,7 @@ SECRET_KEY = u'永远是个密秘'.encode('utf-8')
 
 --------------------------
 
-**`SERVER_NAME`**
+### `SERVER_NAME`
 
 Your server name, a string of pattern `address:port`. It must be set
 to your actual server name in the production environment.
@@ -74,7 +74,7 @@ server_name = 'example.com' # default port 80
 
 --------------------------
 
-**`DEBUG`**
+### `DEBUG`
 
 Boolean, very useful for development.
 
@@ -83,7 +83,7 @@ Boolean, very useful for development.
 
 --------------------------
 
-**`DATABASE_ECHO`**:
+### `DATABASE_ECHO`
 
 If True, it will log all statements to your console.
 
@@ -93,7 +93,7 @@ If True, it will log all statements to your console.
 
 --------------------------
 
-**`DATABASE_URI`**
+### `DATABASE_URI`
 
 See: [http://docs.sqlalchemy.org/en/rel_0_8/core/engines.html#database-urls](http://docs.sqlalchemy.org/en/rel_0_8/core/engines.html#database-urls)
 
@@ -108,7 +108,7 @@ DATABASE_URI = 'sqlite:////path/to/your/taoblog.db'
 
 --------------------------
 
-**`ADMIN_EMAIL`**
+### `ADMIN_EMAIL`
 
 It can be a single email string or a list of email string, or a single
 `*`, which means all registered users can be admin.
@@ -125,7 +125,7 @@ ADMIN_EMAIL = ['jerry@email.com', 'tom@gmail.com']
 
 --------------------------
 
-**`I18N_FOLDER`**
+### `I18N_FOLDER`
 
 A path string to specify your custom locale files.
 
@@ -134,7 +134,7 @@ A path string to specify your custom locale files.
 
 --------------------------
 
-**`GOOGLE_ANALYTICS_ID`**
+### `GOOGLE_ANALYTICS_ID`
 
 Your Google analytics ID. If provided, the Google Analytics code will
 be embedded in your pages.
@@ -148,7 +148,7 @@ GOOGLE_ANALYTICS_ID = 'UA-35730532-1'
 
 --------------------------
 
-**`POST_PERPAGE`**
+### `POST_PERPAGE`
 
 How many posts you want to show per page.
 
@@ -156,9 +156,7 @@ How many posts you want to show per page.
 
 --------------------------
 
-**`TWITTER_CONSUMER`**,
-**`FACEBOOK_CONSUMER`**
-and **`GOOGLE_CONSUMER`**
+### `TWITTER_CONSUMER`, `FACEBOOK_CONSUMER` and `GOOGLE_CONSUMER`
 
 A tuple stores your consumer info.
 
