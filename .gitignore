@@ -1,6 +1,6 @@
 *.pyc
-
 .sass-cache
-/instances
+
 /TODO.org
 /.syncignore
+/upload.sh
