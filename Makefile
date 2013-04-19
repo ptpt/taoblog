@@ -2,8 +2,6 @@ SRC = ./taoblog
 STATIC = $(SRC)/static
 TEMPLATES = $(SRC)/templates
 
-REMOTE_DEST = "root@taopeng.me:/usr/local/lib/python2.7/dist-packages/taoblog"
-
 
 .PHONY: example clean wc tests sync upload
 
@@ -25,9 +23,3 @@ wc:
 
 tests:
 	python -m unittest taoblog.tests
-
-upload:
-	rsync -avzL --exclude-from .syncignore taoblog/ $(REMOTE_DEST)
-
-sync:
-	rsync -avzL --exclude-from .syncignore --delete taoblog/ $(REMOTE_DEST)
