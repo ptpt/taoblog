@@ -1,3 +1,8 @@
-from .twitter import TwitterOAuth
 from .facebook import FacebookOAuth
-from .google import GoogleOAuth
+
+
+def choose_provider(name):
+    if name == 'facebook':
+        return FacebookOAuth
+    else:
+        raise RuntimeError('invalid provider')

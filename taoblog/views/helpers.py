@@ -38,7 +38,7 @@ def save_account_to_session(account):
     session['sid'] = \
         ''.join([random.choice(
                 '0123456789qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM')
-                 for _ in xrange(24)])
+                for _ in xrange(24)])
     session.permanent = True
 
 

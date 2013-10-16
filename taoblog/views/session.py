@@ -30,8 +30,8 @@ def logout():
     if g.is_login and request.values.get('sid') == session.get('sid'):
         session.clear()
         flash('You\'ve been logout', category='success')
-    # always remove identity from session
-    session.pop('identity', None)
+    session.pop('token', None)
+    session.pop('provider', None)
     return redirect(get_next_url())
 
 
@@ -39,6 +39,7 @@ def logout():
 def debug_login():
     if not current_app.config['DEBUG']:
         abort(403)
+    account = None
     try:
         account = User(name=request.form.get('name'),
                        email=request.form.get('email'),
@@ -58,6 +59,6 @@ def debug_logout():
         abort(403)
     if g.is_login and request.values.get('sid') == session.get('sid'):
         session.clear()
-    # always remove identity from session
-    session.pop('identity', None)
+    session.pop('token', None)
+    session.pop('provider', None)
     return redirect(get_next_url())

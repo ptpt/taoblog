@@ -13,7 +13,7 @@ from .account import BP as bp_account
 from .admin import BP as bp_admin
 from .session import BP as bp_session
 from .openid import BP as bp_openid
-from .oauth import (TwitterOAuth, FacebookOAuth, GoogleOAuth)
+from .oauth import (FacebookOAuth)
 
 
 def configure_app(app):
@@ -24,14 +24,8 @@ def configure_app(app):
     app.register_blueprint(bp_session)
     app.register_blueprint(bp_openid)
 
-    if 'TWITTER_CONSUMER' in app.config:
-        app.register_blueprint(TwitterOAuth(app).blueprint)
-
     if 'FACEBOOK_CONSUMER' in app.config:
         app.register_blueprint(FacebookOAuth(app).blueprint)
-
-    if 'GOOGLE_CONSUMER' in app.config:
-        app.register_blueprint(GoogleOAuth(app).blueprint)
 
     I18n.create_jinja_environment = app.create_jinja_environment
     i18n = I18n()

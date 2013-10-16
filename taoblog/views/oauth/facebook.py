@@ -1,34 +1,32 @@
-from flask import redirect, url_for
+from flask import url_for, request
+from rauth import OAuth2Service
 
-from ..helpers import get_next_url
 from .oauth import BaseOAuth
 
 
 class FacebookOAuth(BaseOAuth):
     def __init__(self, app):
-        self.me = None
-        self.remote_app = BaseOAuth.OAUTH.remote_app(
-            'facebook',
+        self.service = OAuth2Service(
+            name='facebook',
             base_url='https://graph.facebook.com/',
-            request_token_url=None,
-            access_token_url='/oauth/access_token',
+            access_token_url='https://graph.facebook.com/oauth/access_token',
             authorize_url='https://www.facebook.com/dialog/oauth',
-            consumer_key=app.config['FACEBOOK_CONSUMER'][0],
-            consumer_secret=app.config['FACEBOOK_CONSUMER'][1],
-            request_token_params={'scope': 'email'})
-        BaseOAuth.__init__(self)
+            client_id=app.config['FACEBOOK_CONSUMER'][0],
+            client_secret=app.config['FACEBOOK_CONSUMER'][1])
+        super(FacebookOAuth, self).__init__()
 
-    def find_token(self, response):
-        return response['access_token'], ''
+    def get_access_token(self, code):
+        redirect_uri = url_for('oauth_%s.authorized' % self.service.name,
+                               _external=True,
+                               next=request.values.get('next'))
+        data = dict(code=code, redirect_uri=redirect_uri)
+        return self.service.get_access_token(data=data)
 
-    def find_identity(self, response):
-        if not self.me:
-            self.me = self.remote_app.get('/me')
-        return self.me.data.get('id') # The user's Facebook ID
+    def get_identity(self, token):
+        _, _, identity = self.get_user_info(token)
+        return identity
 
-    def find_form_defaults(self, response):
-        if not self.me:
-            self.me = self.remote_app.get('/me')
-        return {'next': get_next_url(),
-                'name': self.me.data.get('name'), # The user's full name
-                'email': self.me.data.get('email')}
+    def get_user_info(self, token):
+        auth_session = self.service.get_session(token)
+        me = auth_session.get('me').json()
+        return me['name'], me['email'], me['id']

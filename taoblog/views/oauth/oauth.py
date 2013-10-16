@@ -1,72 +1,77 @@
 from flask import (url_for, flash, redirect, session, Blueprint, request)
-from flask_oauth import OAuth
 
 from ...models import Session
 from ...models.user import User, UserOperator
-from ..helpers import save_account_to_session, unquote_token, quote_token
+from ..helpers import save_account_to_session
 
 
 class BaseOAuth(object):
-    OAUTH = OAuth()
-    UO = UserOperator(Session())
+    user_op = UserOperator(Session())
 
-    remote_app = None
+    service = None
 
     def __init__(self):
-        if self.remote_app is None:
-            raise RuntimeError('remote_app is not defined.')
+        if self.service is None:
+            raise RuntimeError('service is not defined.')
 
-        self.remote_app.tokengetter(self._get_token)
-        self.blueprint = Blueprint('oauth_%s' % self.remote_app.name, __name__)
-        self.blueprint.add_url_rule('/login/%s' % self.remote_app.name,
+        self.blueprint = Blueprint('oauth_%s' % self.service.name, __name__)
+        self.blueprint.add_url_rule('/login/%s' % self.service.name,
                                     endpoint='login',
                                     view_func=self._login)
-        self.blueprint.add_url_rule('/login/%s/oauth-authorized' % self.remote_app.name,
-                                    endpoint='oauth_authorized',
-                                    view_func=self.remote_app.authorized_handler(self._oauth_authorized))
+        self.blueprint.add_url_rule('/login/%s/authorized' % self.service.name,
+                                    endpoint='authorized',
+                                    view_func=self._authorized)
 
     def _login(self):
-        callback = url_for('oauth_%s.oauth_authorized' % self.remote_app.name,
-                           next=request.values.get('next'),
-                           _external=True)
-        return self.remote_app.authorize(callback=callback)
+        redirect_uri = url_for('oauth_%s.authorized' % self.service.name,
+                               _external=True,
+                               next=request.values.get('next'))
+        params = {'redirect_uri': redirect_uri}
+        return redirect(self.service.get_authorize_url(**params))
 
-    def _get_token(self):
-        if 'token' in session:
-            return unquote_token(session['token'])
-
-    def _oauth_authorized(self, resp):
+    def _authorized(self):
         next_url = request.args.get('next') or request.url_root
 
-        if resp is None:
-            flash(u'You denied the request to sign in.', category='error')
+        if 'code' not in request.args:
+            flash('You did not authorize the request')
             return redirect(next_url)
 
-        session['token'] = quote_token(self.find_token(resp))
-        identity = self.find_identity(resp)
+        code = request.args['code']
+        token = self.get_access_token(code)
+        name, email, identity = self.get_user_info(token)
 
-        account = self.UO.session.query(User).\
-            filter_by(provider=self.remote_app.name).\
+        account = self.user_op.session.query(User).\
+            filter_by(provider=self.service.name).\
             filter_by(identity=identity).first()
 
         if account:
-            # login
+            ## login
             save_account_to_session(account)
             flash('welcome', category='success')
-            session.pop('token', None)
             return redirect(next_url)
         else:
-            # create account
-            session['provider'] = self.remote_app.name
-            session['identity'] = identity
-            defaults = self.find_form_defaults(resp)
-            return redirect(url_for('account.profile', **defaults))
+            ## create account
+            session['token'] = token
+            session['provider'] = self.service.name
+            params = {'next': next_url,
+                      'name': name,
+                      'email': email}
+            return redirect(url_for('account.profile', **params))
 
-    def find_token(self, resp):
-        raise RuntimeError('Required to be implemented.')
+    def get_identity(self, code):
+        """
+        Get user identity from the provider.
 
-    def find_identity(self, resp):
-        raise RuntimeError('Required to be implemented.')
+        The identity and provider are used to
+        identify that you are real user on the provider,
+        and they must be unique.
+        """
+        raise RuntimeError('Required to be implemented')
 
-    def find_form_defaults(self, resp):
-        raise RuntimeError('Required to be implemented.')
+    def get_access_token(self, code):
+        """ Exchange code for an access token """
+        raise RuntimeError('Required to be implemented')
+
+    def get_user_info(self, token):
+        """ Get a list of name, email, identity from the provider """
+        raise RuntimeError('Required to be implemented')

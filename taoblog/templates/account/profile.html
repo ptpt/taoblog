@@ -28,7 +28,7 @@
                     <input type="hidden" name="next" value="{{ next }}">
                 </form>
                 {############################## update or create account
-                #}<form id="save-form" action="{{ url_for('account.create_user') if 'identity' in session and 'provider' in session else url_for('account.update_user') }}" method="POST">
+                #}<form id="save-form" action="{{ url_for('account.update_user') if g.is_login else url_for('account.create_user') }}" method="POST">
                     <div class="field">
                         <label>Name</label>
                         <input type="text" name="name" value="{{ request.args['name'] or session['name'] }}">
@@ -37,17 +37,13 @@
                         <label>Email</label>
                         <input type="email" name="email" value="{{ request.args['email'] or session['email'] }}">
                     </div>
-                    <div class="field">
-                        <label>Website</label>
-                        <input type="url" name="website" value="{{ request.args['website'] or session['account.website'] }}">
-                    </div>
                     <input type="hidden" name="next" value="{{ next }}">
                 </form>
                 <menu type='toolbar'>
-                    {% if 'token' not in session -%}
+                    {% if g.is_login %}
                     <li class="delete"><a href="#" onClick="confirm('Cancel your account?') && document.forms['delete-form'].submit()">Cancel my Account</a></li>
-                    {%- endif %}
-                    <li><input type="submit" value="{{ 'Create' if 'identity' in session and 'provider' in session else 'Update' }}" form="save-form"></li>
+                    {% endif %}
+                    <li><input type="submit" value="{{ 'Update' if g.is_login else 'Create' }}" form="save-form"></li>
                     <li><input type="submit" value="Log out" form="logout-form"></li>
                 </menu>
             </div>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import (Blueprint, request, g,
+from flask import (Blueprint, request, g, current_app,
                    session, redirect, url_for,
                    abort, render_template, flash)
 
@@ -8,6 +8,7 @@ from ..models import Session, ModelError
 from ..models.user import User, UserOperator
 from .helpers import (save_account_to_session,
                       check_consistency, get_next_url)
+from .oauth import choose_provider
 
 
 BP = Blueprint('account', __name__)
@@ -20,8 +21,10 @@ BP.before_request(check_consistency)
 @BP.route('/')
 def profile():
     next_url = get_next_url()
-    if 'uid' in session or ('provider' in session and 'identity' in session):
-        # editing or creating
+    if g.is_login:
+        session.pop('provider', None)
+        session.pop('token', None)
+    if g.is_login or ('token' in session and 'provider' in session):
         return render_template('account/profile.html', next=next_url)
     else:
         return redirect(url_for('session.render_login'))
@@ -38,8 +41,8 @@ def delete_user():
         session.clear()
         flash('You\'ve been logout', category='success')
         flash('Your account has been deleted', category='success')
+    session.pop('token', None)
     session.pop('provider', None)
-    session.pop('identity', None)
     return redirect(get_next_url())
 
 
@@ -74,13 +77,17 @@ def update_user():
 
 @BP.route('/create', methods=['POST'])
 def create_user():
-    if 'provider' not in session or 'identity' not in session:
-        # todo: clear session fields
+    if not ('provider' in session and 'token' in session):
         abort(403)
+    next_url = get_next_url()
     name = request.form.get('name')
     email = request.form.get('email')
-    next_url = get_next_url()
-    provider, identity = session['provider'], session['identity']
+    provider = session['provider']
+    token = session['token']
+    ProviderOAuth = choose_provider(provider)
+    # todo: if token is invalid, do somthing here
+    identity = ProviderOAuth(current_app).get_identity(token)
+
     try:
         account = User(name=name,
                        email=email,
@@ -95,7 +102,7 @@ def create_user():
                                 email=email))
     else:
         session.pop('provider', None)
-        session.pop('identity', None)
+        session.pop('token', None)
         save_account_to_session(account)
         flash('New account created', category='success')
         return redirect(next_url)
