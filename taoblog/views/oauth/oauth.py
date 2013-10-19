@@ -11,27 +11,24 @@ class BaseOAuthError(Exception):
 
 class BaseOAuth(object):
     user_op = UserOperator(Session())
-
     service = None
+    service_name = None
+    authorized_params = {}
 
     def __init__(self):
-        if self.service is None:
+        if self.service is None or self.service_name is None:
             raise RuntimeError('service is not defined.')
 
-        self.blueprint = Blueprint('oauth_%s' % self.service.name, __name__)
-        self.blueprint.add_url_rule('/login/%s' % self.service.name,
+        self.blueprint = Blueprint('oauth_%s' % self.service_name, __name__)
+        self.blueprint.add_url_rule('/login/%s' % self.service_name,
                                     endpoint='login',
                                     view_func=self._login)
-        self.blueprint.add_url_rule('/login/%s/authorized' % self.service.name,
+        self.blueprint.add_url_rule('/login/%s/authorized' % self.service_name,
                                     endpoint='authorized',
                                     view_func=self._authorized)
 
     def _login(self):
-        redirect_uri = url_for('oauth_%s.authorized' % self.service.name,
-                               _external=True,
-                               next=request.values.get('next'))
-        params = {'redirect_uri': redirect_uri}
-        return redirect(self.service.get_authorize_url(**params))
+        return redirect(self.service.get_authorize_url(**self.authorized_params))
 
     def _authorized(self):
         next_url = request.args.get('next') or request.url_root
@@ -45,7 +42,7 @@ class BaseOAuth(object):
         name, email, identity = self.get_user_info(token)
 
         account = self.user_op.session.query(User).\
-            filter_by(provider=self.service.name).\
+            filter_by(provider=self.service_name).\
             filter_by(identity=identity).first()
 
         if account:
@@ -56,13 +53,18 @@ class BaseOAuth(object):
         else:
             ## create account
             session['token'] = token
-            session['provider'] = self.service.name
+            session['provider'] = self.service_name
             params = {'next': next_url,
                       'name': name,
                       'email': email}
             return redirect(url_for('account.profile', **params))
 
-    def get_identity(self, code):
+    def get_redirect_uri(self):
+        return url_for('oauth_%s.authorized' % self.service_name,
+                       _external=True,
+                       next=request.values.get('next'))
+
+    def get_identity(self, token):
         """
         Get user identity from the provider.
 
