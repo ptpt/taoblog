@@ -24,11 +24,6 @@
                     <input type="hidden" name="next" value="{{ next }}">
                     <input type="hidden" name="openid" value="https://www.yahoo.com">
                 </form>
-                {% if config['TWITTER_CONSUMER'] %}
-                <form id="twitter" method="GET" action="{{ url_for('oauth_twitter.login') }}">
-                    <input type="hidden" name="next" value="{{ next }}">
-                </form>
-                {% endif %}
                 {% if config['FACEBOOK_CONSUMER'] %}
                 <form id="facebook" method="GET" action="{{ url_for('oauth_facebook.login') }}">
                     <input type="hidden" name="next" value="{{ next }}">

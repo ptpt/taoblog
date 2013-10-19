@@ -156,7 +156,7 @@ How many posts you want to show per page.
 
 --------------------------
 
-### `TWITTER_CONSUMER`, `FACEBOOK_CONSUMER` and `GOOGLE_CONSUMER`
+### `FACEBOOK_CONSUMER` and `GOOGLE_CONSUMER`
 
 A tuple stores your consumer info.
 
