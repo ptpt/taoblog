@@ -5,6 +5,10 @@ from ...models.user import User, UserOperator
 from ..helpers import save_account_to_session
 
 
+class BaseOAuthError(Exception):
+    pass
+
+
 class BaseOAuth(object):
     user_op = UserOperator(Session())
 

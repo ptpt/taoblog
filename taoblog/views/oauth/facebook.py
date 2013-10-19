@@ -1,7 +1,7 @@
 from flask import url_for, request
 from rauth import OAuth2Service
 
-from .oauth import BaseOAuth
+from .oauth import BaseOAuth, BaseOAuthError
 
 
 class FacebookOAuth(BaseOAuth):
@@ -28,5 +28,7 @@ class FacebookOAuth(BaseOAuth):
 
     def get_user_info(self, token):
         auth_session = self.service.get_session(token)
-        me = auth_session.get('me').json()
-        return me['name'], me['email'], me['id']
+        json = auth_session.get('me').json()
+        if 'error' in json:
+            raise BaseOAuthError(json['error']['message'])
+        return json['name'], json['email'], json['id']

@@ -1,3 +1,4 @@
+from .oauth import BaseOAuthError
 from .facebook import FacebookOAuth
 
 

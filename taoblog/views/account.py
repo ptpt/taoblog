@@ -8,7 +8,7 @@ from ..models import Session, ModelError
 from ..models.user import User, UserOperator
 from .helpers import (save_account_to_session,
                       check_consistency, get_next_url)
-from .oauth import choose_provider
+from .oauth import choose_provider, BaseOAuthError
 
 
 BP = Blueprint('account', __name__)
@@ -85,8 +85,13 @@ def create_user():
     provider = session['provider']
     token = session['token']
     ProviderOAuth = choose_provider(provider)
-    # todo: if token is invalid, do somthing here
-    identity = ProviderOAuth(current_app).get_identity(token)
+    try:
+        identity = ProviderOAuth(current_app).get_identity(token)
+    except BaseOAuthError as err:
+        session.pop('provider')
+        session.pop('token')
+        flash(err.message, category='error')
+        return redirect(url_for('session.render_login'))
 
     try:
         account = User(name=name,
