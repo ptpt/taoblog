@@ -12,7 +12,6 @@ from .api import BP as bp_api
 from .account import BP as bp_account
 from .admin import BP as bp_admin
 from .session import BP as bp_session
-from .openid import BP as bp_openid
 from .oauth import (FacebookOAuth, GoogleOAuth)
 
 
@@ -22,7 +21,6 @@ def configure_app(app):
     app.register_blueprint(bp_admin, url_prefix='/admin')
     app.register_blueprint(bp_account, url_prefix='/account')
     app.register_blueprint(bp_session)
-    app.register_blueprint(bp_openid)
 
     if 'FACEBOOK_CONSUMER' in app.config:
         app.register_blueprint(FacebookOAuth(app).blueprint)

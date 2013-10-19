@@ -2,5 +2,4 @@ SQLAlchemy
 misaka
 pygments
 Flask
-Flask-OpenID
 rauth
