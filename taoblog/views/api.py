@@ -197,14 +197,11 @@ def set_status(status):
         return jsonify_error('admin required', 403)
     if status not in [Post.STATUS_TRASH, Post.STATUS_PUBLIC, Post.STATUS_PRIVATE]:
         return jsonify_error('invalid status', 400)
-    id_list = request.form.get('id')
-    if id_list:
-        id_list = id_list.split(',')
-        for id in id_list:
-            id_list = [require_int(id, JumpDirectly(jsonify_error('invalid id', 400)))
-                       for id in id_list]
-    else:
-        return jsonify_error('invalid id list', 400)
+    id_param = request.form.get('id')
+    if id_param is None:
+        return jsonify_error('invalid id parameter', 400)
+    id_list = [require_int(id, JumpDirectly(jsonify_error('invalid id', 400)))
+               for id in id_param.split(',')]
     posts = PO.session.query(Post).filter(Post.id.in_(id_list)).all()
     for post in posts:
         post.status = status
