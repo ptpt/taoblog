@@ -111,14 +111,14 @@ class APIViewTestCase(TaoblogTestCase):
                                                 'slug': 'garbage-language',
                                                 'text': 'you can not touch this',
                                                 'tags': 'garbage bad'})
-        data = json.loads(rv.data) # get its id
+        data = json.loads(rv.data)  # get its id
         # hide it
         self.app.post('/api/posts/trash', data={'id': data['response']['posts'][0]['id']})
         # get all public and private posts
         rv = self.app.get(api)
         data = json.loads(rv.data)
         self.assertEqual(data['stat'], 'ok')
-        self.assertEqual(data['response']['total_posts'], 3 + 1) # 3 public posts and 1 private post
+        self.assertEqual(data['response']['total_posts'], 3 + 1)  # 3 public posts and 1 private post
         self.assertEqual(data['response']['posts'][3]['slug'], 'python-is-cool')
         self.assertEqual(data['response']['posts'][2]['slug'], 'ruby-is-bad')
         self.assertEqual(data['response']['posts'][1]['slug'], 'lisp-is-awesome')
@@ -156,6 +156,11 @@ class APIViewTestCase(TaoblogTestCase):
         self.assertEqual(data['response']['total_posts'], 2 + 1) # 2 public posts and 1 private post
         self.assertEqual(data['response']['posts'][0]['slug'], 'secrest-silver-bullet')
         self.assertEqual(data['response']['posts'][1]['slug'], 'lisp-is-awesome')
+        # get specified post
+        rv = self.app.get(api+'?id=1')
+        data = json.loads(rv.data)
+        self.assertEqual(data['response']['total_posts'], 1)
+        self.assertEqual(data['response']['posts'][0]['title'], 'python is cool')
         # fail: limit is non-number
         rv = self.app.get(api + '?limit=invalid')
         self.assertEqual(rv.status_code, 400)

@@ -174,6 +174,7 @@ def get_posts():
             return jsonify_error(err.message, 400)
     else:
         # get single post when post id is specified
+        more = False
         id = require_int(id, JumpDirectly(jsonify_error('invalid id', 400)))
         post = PO.get_post(id)
         if post is None:
