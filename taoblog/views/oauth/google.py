@@ -35,7 +35,7 @@ class GoogleOAuth(BaseOAuth):
 
     def get_user_info(self, token):
         auth_session = self.service.get_session(token)
-        json = auth_session.get('/oauth2/v2/userinfo').json()
-        if 'error' in json:
-            raise BaseOAuthError(json['error']['message'])
-        return json['name'], json['email'], json['id']
+        info = auth_session.get('/oauth2/v2/userinfo').json()
+        if 'error' in info:
+            raise BaseOAuthError(info['error']['message'])
+        return info['name'], info['email'], info['id']

@@ -109,7 +109,7 @@ def validate_slug(slug):
     if not slug:
         return False
     p = re.compile(r'[\t\n\r !"#$%&\'()*\/<=>?@\[\\\]^`{|},.]+')
-    return (p.search(slug) is None)
+    return p.search(slug) is None
 
 
 def slugify(text, delim=u'-'):

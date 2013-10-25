@@ -99,13 +99,13 @@ class TestPost(TaoblogTestCase):
         # scheme:  Scheme, LISP
         self.assertEqual(clojure.add_tags(['Clojure'])[0].name, 'Clojure')
         self.assertEqual(clojure.add_tags(['LISP'])[0].name, 'LISP')
-        self.assertEqual(set(clojure.tags), set(['Clojure', 'LISP']))
+        self.assertEqual(set(clojure.tags), {'Clojure', 'LISP'})
         self.assertEqual(scheme.add_tags(['Scheme'])[0].name, 'Scheme')
         self.assertEqual(scheme.add_tags(['SCHEME']), []) # no new tag added
         self.assertEqual(scheme.add_tags(['scheme']), []) # no new tag added
         self.assertEqual(scheme.add_tags(['lisp'])[0].name, 'LISP')
-        self.assertEqual(set(scheme.tags), set(['Scheme', 'LISP']))
-        self.assertEqual(set(clojure.tags), set(['Clojure', 'LISP']))
+        self.assertEqual(set(scheme.tags), {'Scheme', 'LISP'})
+        self.assertEqual(set(clojure.tags), {'Clojure', 'LISP'})
         # remove tags
         scheme.remove_tags(['SCHEME'])
         self.assertIsNone(self.session.query(Tag).filter_by(name='Scheme').first())
@@ -118,7 +118,7 @@ class TestPost(TaoblogTestCase):
         self.assertIsNone(self.session.query(Tag).filter_by(name='Clojure').first())
         self.assertIsNone(self.session.query(Tag).first())
         scheme.set_tags(['SCHEME', 'LISP', 'Scheme', 'Lisp'])
-        self.assertEqual(set(tag.name for tag in self.session.query(Tag).all()), set(['SCHEME', 'LISP']))
+        self.assertEqual(set(tag.name for tag in self.session.query(Tag).all()), {'SCHEME', 'LISP'})
         self.assertEqual(scheme.set_tags(['scheme', 'lisp', 'scheme', 'lisp']), ([], [])) # add none, remove none
 
     def test_content(self):
@@ -159,7 +159,7 @@ class TestPost(TaoblogTestCase):
                      identity='peter')
         post.readers = [jim, tao, peter]
         self.assertEqual(post.status, Post.STATUS_PRIVATE)
-        self.assertEqual(set(self.session.query(User).all()), set([jim, tao, peter]))
+        self.assertEqual(set(self.session.query(User).all()), {jim, tao, peter})
         post2 = Post(title='jim tao', text='text', slug='jim-tao')
         self.assertEqual(post2.status, Post.STATUS_PUBLIC)
         dude = User(name='Dude',
@@ -168,10 +168,10 @@ class TestPost(TaoblogTestCase):
                     identity='dude')
         post2.readers = [jim, tao, dude]
         self.assertEqual(post2.status, Post.STATUS_PRIVATE)
-        self.assertEqual(set(self.session.query(User).all()), set([jim, tao, dude, peter]))
-        self.assertEqual(set(peter.posts), set([post]))
-        self.assertEqual(set(jim.posts), set([post, post2]))
-        self.assertEqual(set(dude.posts), set([post2]))
+        self.assertEqual(set(self.session.query(User).all()), {jim, tao, dude, peter})
+        self.assertEqual(set(peter.posts), {post})
+        self.assertEqual(set(jim.posts), {post, post2})
+        self.assertEqual(set(dude.posts), {post2})
         playboy = User(name='Playboy',
                        email='play@aa.com',
                        provider='openid',
@@ -221,7 +221,8 @@ class TestPostOperator(TaoblogTestCase):
         self.assertEqual(4, len(posts))
         self.assertEqual(posts, [post, haskell, scheme, clojure])
         self.assertFalse(more)  # no more
-        self.assertEqual(set([str(tag) for tag in op.get_public_tags()]), set(['clojure', 'fp', 'scheme', 'haskell']))
+        self.assertEqual(set([str(tag) for tag in op.get_public_tags()]),
+                         {'clojure', 'fp', 'scheme', 'haskell'})
 
         op.trash_post(post)
         posts, more = op.get_public_posts()
@@ -230,9 +231,9 @@ class TestPostOperator(TaoblogTestCase):
         # scheme will be removed from public tags
         op.trash_post(scheme)
         self.assertEqual(set([tag.name for tag in op.get_public_tags()]),
-                         set(['clojure', 'fp', 'haskell']))
+                         {'clojure', 'fp', 'haskell'})
         self.assertEqual(set([str(tag) for tag in op.get_trash_tags()]),
-                         set(['scheme', 'fp']))
+                         {'scheme', 'fp'})
 
 
 if __name__ == '__main__':

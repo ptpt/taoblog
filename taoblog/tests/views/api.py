@@ -63,7 +63,8 @@ class APIViewTestCase(TaoblogTestCase):
         self.assertEqual(data['response']['posts'][0]['title'], 'this is title')
         self.assertEqual(data['response']['posts'][0]['slug'], 'slug')
         self.assertIsNone(data['response']['posts'][0]['text'])
-        self.assertEqual(set(data['response']['posts'][0]['tags']), set(['ruby', 'python', 'this-is-cool']))
+        self.assertEqual(set(data['response']['posts'][0]['tags']),
+                         {'ruby', 'python', 'this-is-cool'})
         # fail: duplicated slug
         rv = self.app.post(api, data={'title': 'this is another title',
                                       'slug': 'slug'})
