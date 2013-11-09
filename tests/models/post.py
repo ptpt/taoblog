@@ -4,7 +4,7 @@ import time
 import unittest
 from datetime import datetime
 
-from taoblog.tests.helpers import TaoblogTestCase
+from ..helpers import TaoblogTestCase
 from taoblog.models.post import Post, PostText, PostOperator, Tag, Draft
 from taoblog.models import ModelError
 

@@ -1,7 +1,7 @@
 import unittest
 
 import taoblog
-from taoblog.tests.helpers import TaoblogTestCase
+from ..helpers import TaoblogTestCase
 
 
 class PostViewTestCase(TaoblogTestCase):

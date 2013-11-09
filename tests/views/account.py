@@ -2,7 +2,7 @@ import unittest
 import json
 
 import taoblog
-from taoblog.tests.helpers import TaoblogTestCase
+from ..helpers import TaoblogTestCase
 
 class AccountTestCase(TaoblogTestCase):
     def setUp(self):

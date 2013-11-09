@@ -23,4 +23,4 @@ wc:
 	wc `find $(TEMPLATES) -name "*.html"`
 
 tests:
-	python -m unittest taoblog.tests
+	python -m unittest tests

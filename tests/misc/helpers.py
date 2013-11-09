@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
 import unittest
-from datetime import datetime
-from flask import Flask
 
 from taoblog.helpers import (Pagination, chinese_numeralize)
-from taoblog.tests.helpers import get_tests_root
+from ..helpers import get_tests_root
 
 
 tests_root = get_tests_root()
@@ -17,8 +13,10 @@ tests_root = get_tests_root()
 class TestDigitize(unittest.TestCase):
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
+
     def test_cn_digitize(self):
         # print cn_digitize(1)
         self.assertEqual(chinese_numeralize(1), u'一')
@@ -46,22 +44,3 @@ class TestDigitize(unittest.TestCase):
         self.assertEqual(chinese_numeralize(22),u'二十二')
         # print cn_digitize(222)
         self.assertEqual(chinese_numeralize(222),u'两百二十二')
-
-
-# class TestPagination(unittest.TestCase):
-#     def test_all(self):
-#         a = Pagination(['a1', 'b1', 'c1',
-#                         'a2', 'b2', 'c2',
-#                         'a3', 'b3', 'c3',
-#                         'a4', 'b4'], 3)
-#         self.assertEqual(a.get(1), ['a1', 'b1', 'c1'])
-#         self.assertEqual(a.get(2), ['a2', 'b2', 'c2'])
-#         self.assertEqual(a.get(4), ['a4', 'b4'])
-#         self.assertEqual(a.total_pages, 4)
-#         a = Pagination(['a1', 'b1'], 3)
-#         self.assertEqual(a.get(1), ['a1', 'b1'])
-#         self.assertEqual(a.total_pages, 1)
-
-
-if __name__ == '__main__':
-    pass

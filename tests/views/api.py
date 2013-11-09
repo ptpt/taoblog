@@ -2,7 +2,7 @@ import json
 
 
 from taoblog import application
-from taoblog.tests.helpers import TaoblogTestCase
+from ..helpers import TaoblogTestCase
 
 
 class APIViewTestCase(TaoblogTestCase):

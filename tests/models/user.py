@@ -2,7 +2,7 @@ __all__ = ['TestUser', 'TestUserOperator']
 
 import unittest
 
-from taoblog.tests.helpers import TaoblogTestCase
+from ..helpers import TaoblogTestCase
 from taoblog.models.user import *
 from taoblog.models import ModelError
 

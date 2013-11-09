@@ -2,9 +2,10 @@ import os
 import unittest
 
 from taoblog.i18n import I18n
-from taoblog.tests.helpers import get_tests_root
+from ..helpers import get_tests_root
 
 tests_root = get_tests_root()
+
 
 class TestI18N(unittest.TestCase):
     def test_load(self):
