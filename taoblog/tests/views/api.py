@@ -1,31 +1,29 @@
-import unittest
 import json
 
-import taoblog
+
+from taoblog import application
 from taoblog.tests.helpers import TaoblogTestCase
 
 
 class APIViewTestCase(TaoblogTestCase):
     def setUp(self):
         self.db_setup()
-        taoblog.application.config['DEBUG'] = True
-        taoblog.application.config['ADMIN_EMAIL'] = ['admin@gmail.com', 'admin2@gmail.com']
-        self.app = taoblog.application.test_client()
+        self.app = application.test_client()
 
     def tearDown(self):
         self.db_teardown()
 
     def login(self, email):
-        return self.app.post('/login/debug',
-                             data= {'name': 'Admin',
-                                    'provider': 'openid',
-                                    'secret': 'a secret',
-                                    'email': email,
-                                    'sid': 'sid'})
+        data = {'name': 'Admin',
+                'provider': 'openid',
+                'secret': 'a secret',
+                'email': email,
+                'sid': 'sid'}
+        return self.app.post('/login/testing', data=data)
 
     def logout(self):
-        return self.app.post('/logout/debug',
-                             data= {'sid':'sid'})
+        return self.app.post('/logout/testing',
+                             data={'sid': 'sid'})
 
     def test_create_posts(self):
         api = '/api/posts/'
@@ -40,7 +38,7 @@ class APIViewTestCase(TaoblogTestCase):
         self.assertEqual(rv.status_code, 403)
         self.logout()
         # sucess
-        self.login('admin@gmail.com')
+        self.login('admin@taoblog.com')
         rv = self.app.post(api, data={'title': 'this is title',
                                       'text': 'hello world',
                                       'slug': 'this-is-another-slug'})
@@ -70,15 +68,15 @@ class APIViewTestCase(TaoblogTestCase):
                                       'slug': 'slug'})
         self.assertEqual(rv.status_code, 400)
         # fail: invalid tags
-        rv = self.app.post(api, data = {'title': 'this is title',
-                                        'slug': 'another-slug',
-                                        'tags': 'this-is-invalid+'})
+        rv = self.app.post(api, data={'title': 'this is title',
+                                      'slug': 'another-slug',
+                                      'tags': 'this-is-invalid+'})
         self.assertEqual(rv.status_code, 400)
 
     def test_get_posts(self):
         api = '/api/posts/'
         # get no post
-        self.login('admin2@gmail.com')
+        self.login('author@taoblog.com')
         rv = self.app.get(api)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data)

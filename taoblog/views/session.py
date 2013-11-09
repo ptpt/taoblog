@@ -33,32 +33,3 @@ def logout():
     session.pop('token', None)
     session.pop('provider', None)
     return redirect(get_next_url())
-
-
-@BP.route('/login/debug', methods=['POST'])
-def debug_login():
-    if not current_app.config['DEBUG']:
-        abort(403)
-    account = None
-    try:
-        account = User(name=request.form.get('name'),
-                       email=request.form.get('email'),
-                       provider=request.form.get('provider'),
-                       identity=request.form.get('identity'))
-        account.id = 1
-    except ModelError:
-        abort(400)
-    session['sid'] = request.form.get('sid')
-    save_account_to_session(account)
-    return redirect(get_next_url())
-
-
-@BP.route('/logout/debug', methods=['GET', 'POST'])
-def debug_logout():
-    if not current_app.config['DEBUG']:
-        abort(403)
-    if g.is_login and request.values.get('sid') == session.get('sid'):
-        session.clear()
-    session.pop('token', None)
-    session.pop('provider', None)
-    return redirect(get_next_url())
