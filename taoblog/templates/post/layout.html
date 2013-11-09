@@ -2,7 +2,7 @@
 
 {% block head %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
-        <link rel="alternate" type="application/atom+xml" href="{{ url_for('post.atom_feed') }}" />
+        <link rel="alternate" type="application/atom+xml" href="{{ url_for('post.atom_feed') }}">
         <title>{% block title %}{{ localize('Home') }}{% endblock %}</title>
 {% endblock %}
 
