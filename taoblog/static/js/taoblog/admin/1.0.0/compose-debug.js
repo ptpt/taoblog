@@ -10,7 +10,7 @@
             title = $('div.post-editor input[name="title"]');
             text = $('div.post-editor textarea[name="text"]');
             editor = ace.edit("editor");
-            editor.setTheme("ace/theme/solarized_light");
+            editor.setTheme("ace/theme/tomorrow");
             editor.getSession().setMode("ace/mode/markdown");
             editor.setValue(text.val());
             $("#save-draft").click(function(event) {
