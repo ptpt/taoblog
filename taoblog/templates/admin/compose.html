@@ -51,11 +51,11 @@
 
 {% block script %}
             {% if config['DEBUG'] %}
-            var module = '{{ url_for('static', filename='coffee/admin/src/compose.js') }}';
+            var modules = ['$-debug', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/compose-debug.js') }}'];
             {% else %}
-            var module = '{{ url_for('static', filename='js/taoblog/admin/1.0.0/compose.js') }}';
+            var modules = ['$', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/compose.js') }}'];
             {% endif %}
-            seajs.use(['$', module], function($, setupCompose){
+            seajs.use(modules, function($, setupCompose){
                 $(function () {
                     setupCompose();
                 });

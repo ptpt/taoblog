@@ -43,11 +43,10 @@
             seajs.config({
                 plugins: ['shim'],
                 alias:{
-                    $: 'jquery/jquery/1.8.0/jquery-debug.js',
-                    Uri: 'gallery/jsuri/1.2.2/jsuri-debug.js',
-                    moment: 'gallery/moment/2.0.0/moment-debug.js',
-                    ace: {src: 'gallery/ace/src-noconflict/ace.js',
-                          exports: 'ace'}
+                    '$-debug': 'jquery/jquery/1.8.0/jquery-debug.js',
+                    'Uri-debug': 'gallery/jsuri/1.2.2/jsuri-debug.js',
+                    'moment-debug': 'gallery/moment/2.0.0/moment-debug.js',
+                    'ace-debug': {src: 'gallery/ace/src-noconflict/ace.js', exports: 'ace'}
                 }
             });
             {% else %}

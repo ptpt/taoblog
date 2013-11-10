@@ -37,12 +37,12 @@
 
 {% block script %}
             {% if config['DEBUG'] %}
-            var module = '{{ url_for('static', filename='coffee/admin/src/posts.js') }}';
+            var modules = ['$-debug', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/posts-debug.js') }}'];
             {% else %}
-            var module = '{{ url_for('static', filename='js/taoblog/admin/1.0.0/posts.js') }}';
+            var modules = ['$', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/posts.js') }}'];
             {% endif %}
 
-            seajs.use(['$', module], function($, setupPosts){
+            seajs.use(modules, function($, setupPosts){
               $(function () {
                 setupPosts();
               });

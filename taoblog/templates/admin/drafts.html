@@ -25,12 +25,12 @@
 
 {% block script %}
             {% if config['DEBUG'] %}
-            var module = '{{ url_for('static', filename='coffee/admin/src/drafts.js') }}';
+            var modules = ['$-debug', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/drafts-debug.js') }}'];
             {% else %}
-            var module = '{{ url_for('static', filename='js/taoblog/admin/1.0.0/drafts.js') }}';
+            var modules = ['$', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/drafts.js') }}'];
             {% endif %}
 
-            seajs.use(['$', module], function($, setupDrafts){
+            seajs.use(modules, function($, setupDrafts){
               $(function () {
                 setupDrafts();
               });
