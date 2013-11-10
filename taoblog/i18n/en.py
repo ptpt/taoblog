@@ -5,6 +5,10 @@ NAME = 'English'
 FALLBACK = 'default'
 
 LOCALE = {
+    '[month_day]': '{{ date.strftime("%b %d") }}',
+
+    '[date]': '{{ date.strftime("%b %d %Y") }}',
+
     'blog title': 'Tao Peng',
 
     'previous page': u'« Previous',
@@ -36,7 +40,7 @@ LOCALE = {
     '{%- endfor -%}',
 
     'posted on [date]': '''Posted on
-<time datetime="{{ date }}" pubdate>{{ date }}</time>
+<time datetime="{{ date }}" pubdate>{{ date.strftime("%B %d, %Y") }}</time>
 ''',
 
     'edit or delete [post]': '''<form>You can
