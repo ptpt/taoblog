@@ -33,17 +33,28 @@
             </section>
         </div>
         <script>
+            {% if config['DEBUG'] %}
             var require = {
                 baseUrl: '{{ url_for('static', filename='js') }}',
                 paths: {
-                    'jquery': 'vendor/jquery/jquery',
-                    'moment': 'vendor/moment/moment',
-                    'Uri': 'vendor/jsuri/Uri'
+                    jquery: 'vendor/jquery/jquery',
+                    moment: 'vendor/moment/moment',
+                    Uri: 'vendor/jsuri/Uri'
                 }
             };
+            {% else %}
+            var require = {
+                baseUrl: '{{ url_for('static', filename='js') }}',
+                paths: {
+                    jquery: 'vendor/jquery/jquery.min',
+                    moment: 'vendor/moment/moment.min',
+                    Uri: 'vendor/jsuri/Uri.min'
+                }
+            }
+            {% endif %}
         </script>
         {% set requirejs_path = url_for('static', filename='js/vendor/requirejs/require.js') %}
-        {% set requirejs_debug_path = url_for('static', filename='js/vendor/requirejs/require-debug.js') %}
+        {% set requirejs_debug_path = url_for('static', filename='js/vendor/requirejs/require.min.js') %}
         {% block script scoped %}
         {% endblock %}
 {% endblock %}
