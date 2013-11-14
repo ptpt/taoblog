@@ -72,12 +72,12 @@ class BaseOAuth(object):
         identify that you are real user on the provider,
         and they must be unique.
         """
-        raise RuntimeError('Required to be implemented')
+        raise NotImplementedError()
 
     def get_access_token(self, code):
         """ Exchange code for an access token """
-        raise RuntimeError('Required to be implemented')
+        raise NotImplementedError()
 
     def get_user_info(self, token):
         """ Get a list of name, email, identity from the provider """
-        raise RuntimeError('Required to be implemented')
+        raise NotImplementedError()
