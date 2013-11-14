@@ -6,6 +6,7 @@ requirejs deps, ($, Toolbar) ->
         text = $('div.post-editor textarea[name="text"]')
 
         editor = ace.edit('editor')
+        editor.renderer.setShowGutter(false)
         editor.setTheme("ace/theme/tomorrow")
         editor.getSession().setMode("ace/mode/markdown")
         editor.setValue(text.val())
