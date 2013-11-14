@@ -1,7 +1,4 @@
-define (require, exports, module) ->
-    $   = require '$'
-    dom = require './dom'
-
+define ['jquery', 'admin/dom'], ($, dom) ->
     truncate = (text, length=255, killwords=false, end='...') ->
         if text.length <= length
             return text

@@ -1,14 +1,12 @@
-define (require, exports, module) ->
-    $ = require('$')
-    Toolbar = require('./toolbar')
-    ace = require('ace')
+deps = ['jquery', 'admin/toolbar']
 
+requirejs deps, ($, Toolbar) ->
     setupCompose = ->
         title = $('div.post-editor input[name="title"]')
         text = $('div.post-editor textarea[name="text"]')
 
         editor = ace.edit('editor')
-        editor.setTheme("ace/theme/solarized_light")
+        editor.setTheme("ace/theme/tomorrow")
         editor.getSession().setMode("ace/mode/markdown")
         editor.setValue(text.val())
 
@@ -42,5 +40,4 @@ define (require, exports, module) ->
                 title.one 'keydown', ->
                     title.css {'border-color': normalColor}
 
-        # $(window).unload (event) ->
-        #     if title.val() or text.val()
+    setupCompose()

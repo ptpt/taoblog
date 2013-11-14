@@ -1,13 +1,12 @@
-define (require, exports, module) ->
-    $       = require '$'
-    Uri     = require 'Uri'
-    moment  = require 'moment'
+deps = ['jquery',
+        'Uri',
+        'moment',
+        'admin/browser',
+        'admin/toolbar',
+        'admin/dom',
+        'admin/utils']
 
-    Browser = require './browser'
-    Toolbar = require './toolbar'
-    dom     = require './dom'
-    Utils   = require './utils'
-
+requirejs deps, ($, Uri, moment, Browser, Toolbar, dom, Utils) ->
     # constants
     PUBLIC = 0
     PRIVATE = 1
@@ -322,5 +321,4 @@ define (require, exports, module) ->
             # show date
             showToolbar()
             browser.showDate()
-
-    return setupPosts
+    setupPosts()

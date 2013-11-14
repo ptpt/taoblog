@@ -36,15 +36,9 @@
 {% endblock %}
 
 {% block script %}
-            {% if config['DEBUG'] %}
-            var modules = ['$-debug', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/posts-debug.js') }}'];
-            {% else %}
-            var modules = ['$', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/posts.js') }}'];
-            {% endif %}
-
-            seajs.use(modules, function($, setupPosts){
-              $(function () {
-                setupPosts();
-              });
-            });
+        {% if config['DEBUG'] %}
+        <script data-main="{{ url_for('static', filename='js/admin/posts.js') }}" src="{{ requirejs_debug_path }}"></script>
+        {% else %}
+        <script data-main="{{ url_for('static', filename='js/admin/posts.min.js') }}" src="{{ requirejs_path }}"></script>
+        {% endif %}
 {% endblock %}

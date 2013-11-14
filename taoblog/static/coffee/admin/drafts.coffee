@@ -1,12 +1,12 @@
-define (require, exports, module) ->
-    $ = require '$'
-    moment = require 'moment'
+deps = ['jquery',
+        'moment',
+        'Uri',
+        'admin/toolbar',
+        'admin/browser',
+        'admin/utils',
+        'admin/dom']
 
-    Toolbar = require './toolbar'
-    Browser = require './browser'
-    Utils   = require './utils'
-    dom     = require './dom'
-
+requirejs deps, ($, moment, Uri, Toolbar, Browser, Utils, dom) ->
     # browser showing drafts
     class DraftBrowser extends Browser
         # show human-readable at the date column
@@ -94,4 +94,4 @@ define (require, exports, module) ->
 
             browser.showDate()
 
-    return setupDrafts
+    setupDrafts()

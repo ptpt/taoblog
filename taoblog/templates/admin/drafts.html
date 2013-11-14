@@ -24,15 +24,10 @@
 {% endblock %}
 
 {% block script %}
-            {% if config['DEBUG'] %}
-            var modules = ['$-debug', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/drafts-debug.js') }}'];
-            {% else %}
-            var modules = ['$', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/drafts.js') }}'];
-            {% endif %}
-
-            seajs.use(modules, function($, setupDrafts){
-              $(function () {
-                setupDrafts();
-              });
-            });
+        {% set data_main = 'scripts/main.js' %}
+        {% if config['DEBUG'] %}
+        <script data-main="{{ url_for('static', filename='js/admin/drafts.js') }}" src="{{ requirejs_debug_path }}"></script>
+        {% else %}
+        <script data-main="{{ url_for('static', filename='js/admin/drafts.min.js') }}" src="{{ requirejs_path }}"></script>
+        {% endif %}
 {% endblock %}

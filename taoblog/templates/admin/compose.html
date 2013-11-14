@@ -50,14 +50,11 @@
 {% endblock %}
 
 {% block script %}
-            {% if config['DEBUG'] %}
-            var modules = ['$-debug', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/compose-debug.js') }}'];
-            {% else %}
-            var modules = ['$', '{{ url_for('static', filename='js/taoblog/admin/1.0.0/compose.js') }}'];
-            {% endif %}
-            seajs.use(modules, function($, setupCompose){
-                $(function () {
-                    setupCompose();
-                });
-            });
+        {% if config['DEBUG'] %}
+        <script src="{{ url_for('static', filename='js/vendor/ace-noconflict/ace.js') }}"></script>
+        <script data-main="{{ url_for('static', filename='js/admin/compose.js') }}" src="{{ requirejs_debug_path }}"></script>
+        {% else %}
+        <script src="{{ url_for('static', filename='js/vendor/ace-min-noconflict/ace.js') }}"></script>
+        <script data-main="{{ url_for('static', filename='js/admin/compose.min.js') }}" src="{{ requirejs_path }}"></script>
+        {% endif %}
 {% endblock %}

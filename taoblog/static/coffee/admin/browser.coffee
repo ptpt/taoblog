@@ -1,6 +1,4 @@
-define (require, exports, module) ->
-    $ = require '$'
-
+define ['jquery'], ($) ->
     class Browser
         constructor: (selector) ->
             browser = this

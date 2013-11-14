@@ -1,7 +1,4 @@
-define (require, exports, module) ->
-    $ = require '$'
-    makeDom = require './dom'
-
+define ['jquery', 'admin/dom'], ($, makeDom) ->
     class Toolbar
         constructor: (selector) ->
             @selector = selector

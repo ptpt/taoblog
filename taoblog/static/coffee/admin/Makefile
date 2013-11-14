@@ -1,9 +1,10 @@
-all: build deploy
+INPUT=*.coffee
+OUTPUT=../../js/admin/
 
-deploy:
-	cp dist/*.js ../../js/taoblog/admin/1.0.0/
+compile:
+	coffee -o $(OUTPUT) $(INPUT)
 
-build:
-	spm build
+watch:
+	coffee -o $(OUTPUT) -wc $(INPUT)
 
-.PHONY: all deploy build
+.PHONY: compile watch
