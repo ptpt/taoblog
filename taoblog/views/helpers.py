@@ -30,15 +30,17 @@ def check_consistency():
         raise JumpDirectly(redirect(get_next_url()))
 
 
+def generate_sid():
+    choices = '0123456789qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM'
+    return ''.join([random.choice(choices) for _ in xrange(24)])
+
+
 def save_account_to_session(account):
     """ save the account information to the session. """
     session['uid'] = account.id
     session['name'] = account.name
     session['email'] = account.email
-    session['sid'] = \
-        ''.join([random.choice(
-                '0123456789qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM')
-                for _ in xrange(24)])
+    session['sid'] = generate_sid()
     session.permanent = True
 
 
