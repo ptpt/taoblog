@@ -61,7 +61,7 @@ def require_int(value, code_or_exception):
     return value
 
 
-def check_login():
+def is_login():
     return set(session).issuperset(('uid', 'name', 'email', 'sid'))
 
 
@@ -71,24 +71,26 @@ def require_login():
             redirect(url_for('session.render_login', next=request.url)))
 
 
-def check_admin(app):
-    if check_login():
+def is_admin(app):
+    if is_login():
         admin_email = app.config.get('ADMIN_EMAIL')
         if isinstance(admin_email, basestring):
             if admin_email == '*':
-                is_admin = True
+                admin_or_not = True
             else:
-                is_admin = session['email'].lower() == \
+                admin_or_not = session['email'].lower() == \
                     admin_email.lower()
         elif admin_email:
-            is_admin = session['email'].lower() in \
+            admin_or_not = session['email'].lower() in \
                 set(email.lower() for email in admin_email)
         else:
-            is_admin = False
+            admin_or_not = False
     else:
-        is_admin = False
+        admin_or_not = False
 
-    return is_admin
+    return admin_or_not
+
+
 
 
 def require_admin():

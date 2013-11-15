@@ -4,8 +4,8 @@ from flask import (request, g, redirect,
 
 from ..models import Base
 from ..i18n import I18n
-from .helpers import (JumpDirectly, check_login,
-                      check_admin, require_admin)
+from .helpers import (JumpDirectly, is_login,
+                      is_admin, require_admin)
 
 from .post import BP as bp_post
 from .api import BP as bp_api
@@ -77,8 +77,8 @@ def configure_app(app):
 
     @app.before_request
     def get_session_status():
-        g.is_login = check_login()
-        g.is_admin = check_admin(current_app)
+        g.is_login = is_login()
+        g.is_admin = is_admin(current_app)
 
     @app.route('/set')
     def set_cookie():
