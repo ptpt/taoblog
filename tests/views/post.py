@@ -1,27 +1,12 @@
-import unittest
-
-import taoblog
 from ..helpers import TaoblogTestCase
 
 
 class PostViewTestCase(TaoblogTestCase):
     def setUp(self):
         self.db_setup()
-        self.app = taoblog.application.test_client()
 
     def tearDown(self):
         self.db_teardown()
-
-    def login(self):
-        data = {'name': 'Admin',
-                'provider': 'openid',
-                'identity': 'a secret',
-                'email': 'admin@gmail.com',
-                'sid': 'sid'}
-        return self.app.post('/login/testing', data=data)
-
-    def logout(self):
-        return self.app.post('/logout/tesing', data={'sid': 'sid'})
 
     def test_home(self):
         rv = self.app.get('/')
@@ -82,7 +67,3 @@ class PostViewTestCase(TaoblogTestCase):
         # fail: draft-id is missing
         rv = self.app.post('/', data={'slug': 'slug'})
         self.assertEqual(rv.status_code, 400)
-
-
-if __name__ == '__main__':
-    unittest.main()

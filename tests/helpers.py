@@ -24,6 +24,26 @@ class TaoblogTestCase(unittest.TestCase):
         self.session.close()
         Base.metadata.drop_all()
 
+    @property
+    def app(self):
+        if not hasattr(self, '_app') or self._app is None:
+            self._app = app.test_client()
+        return self._app
+
+    def login(self, email=None):
+        if email is None:
+            email = app.config['ADMIN_EMAIL'][0]
+        data = {'name': 'Admin',
+                'provider': 'openid',
+                'secret': 'a secret',
+                'email': email,
+                'sid': 'sid'}
+        return self.app.post('/login/testing', data=data)
+
+    def logout(self):
+        return self.app.post('/logout/testing',
+                             data={'sid': 'sid'})
+
 
 def get_tests_root():
     return os.path.dirname(__file__)

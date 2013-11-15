@@ -1,29 +1,14 @@
 import json
 
-
-from taoblog import application
 from ..helpers import TaoblogTestCase
 
 
 class APIViewTestCase(TaoblogTestCase):
     def setUp(self):
         self.db_setup()
-        self.app = application.test_client()
 
     def tearDown(self):
         self.db_teardown()
-
-    def login(self, email):
-        data = {'name': 'Admin',
-                'provider': 'openid',
-                'secret': 'a secret',
-                'email': email,
-                'sid': 'sid'}
-        return self.app.post('/login/testing', data=data)
-
-    def logout(self):
-        return self.app.post('/logout/testing',
-                             data={'sid': 'sid'})
 
     def test_create_posts(self):
         api = '/api/posts/'
