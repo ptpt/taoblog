@@ -13,9 +13,7 @@ BP = Blueprint('admin', __name__)
 PO = PostOperator(Session())
 
 
-@BP.before_request
-def admin_required():
-    require_admin()
+BP.before_request(require_admin)
 
 
 @BP.route('/')

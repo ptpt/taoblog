@@ -7,7 +7,7 @@ from datetime import datetime
 from ..helpers import slugify, get_date_range, Pagination
 from ..models import Session, ModelError
 from ..models.post import Post, Draft, PostOperator
-from .helpers import require_int, JumpDirectly, require_admin
+from .helpers import require_int, JumpDirectly, admin_required
 
 
 BP = Blueprint('post', __name__)
@@ -17,16 +17,16 @@ PO = PostOperator(Session())
 @BP.route('/feed/')
 def atom_feed():
     posts, _ = PO.get_public_posts(limit=app.config['POST_FEED_PERPAGE'])
-    feed = AtomFeed(app.config.get('BLOG_TITLE'), # todo: use settings
+    feed = AtomFeed(app.config.get('BLOG_TITLE'),  # todo: use settings
                     feed_url=url_for('post.atom_feed', _external=True),
                     url=request.url_root,
-                    subtitle=app.config.get('BLOG_SUBTITLE')) # todo: use settings
+                    subtitle=app.config.get('BLOG_SUBTITLE'))  # todo: use settings
     for post in posts:
         feed.add(post.title,
                  post.content,
                  content_type='html',
                  # todo: let admin name be configurable
-                 author=app.config.get('ADMIN_NAME'), # todo: use settings
+                 author=app.config.get('ADMIN_NAME'),  # todo: use settings
                  url=url_for('post.render_post_by_permalink',
                              slug=post.slug,
                              year=post.created_year,
@@ -123,8 +123,8 @@ def render_post(post_id):
 
 
 @BP.route('/post/<int:post_id>/edit')
+@admin_required
 def edit_post(post_id):
-    require_admin()
     post = PO.get_post(post_id)
     if post is None:
         abort(404)
@@ -132,6 +132,7 @@ def edit_post(post_id):
 
 
 @BP.route('/', methods=['POST'])
+@admin_required
 def create_post():              # todo: rename
     """
     Create a post from a draft.
@@ -140,7 +141,6 @@ def create_post():              # todo: rename
     * required post data: slug, draft-id
     * optional post data: tags
     """
-    require_admin()
     slug = request.form.get('slug') or abort(400)
     tags = request.form.get('tags', '').split()
     draft_id = require_int(request.form.get('draft-id'), 400)
@@ -166,6 +166,7 @@ def create_post():              # todo: rename
 
 
 @BP.route('/post/<int:post_id>', methods=['POST'])
+@admin_required
 def update_post(post_id):
     """
     Update the post from draft.
@@ -174,7 +175,6 @@ def update_post(post_id):
     * required post data: post-id, draft-id
     * optional post data: tags, slug
     """
-    require_admin()
     post = PO.get_post(post_id)
     if post is None:
         abort(404)
@@ -208,8 +208,8 @@ def update_post(post_id):
 
 
 @BP.route('/post/<int:post_id>/delete', methods=['POST'])
+@admin_required
 def delete_post(post_id):
-    require_admin()
     post = PO.get_post(post_id)
     if post is None:
         abort(404)
@@ -232,6 +232,7 @@ def try_slugify(title, start=0, delim=u'-'):
 
 
 @BP.route('/prepare', methods=['POST', 'GET'])
+@admin_required
 def prepare():
     """
     Create or update a draft, and a fake post for previewing.
@@ -241,8 +242,6 @@ def prepare():
     * required post data: title, text
     * optional post data: draft-id, post-id
     """
-    require_admin()
-
     if request.method == 'POST':
         # required
         title = request.form.get('title')
@@ -316,8 +315,8 @@ def prepare():
 
 
 @BP.route('/draft/<int:draft_id>/edit')
+@admin_required
 def edit_draft(draft_id):
-    require_admin()
     draft = PO.get_draft(draft_id)
     if draft is None:
         abort(404)
@@ -328,8 +327,8 @@ def edit_draft(draft_id):
 
 
 @BP.route('/drafts/', methods=['POST'])
+@admin_required
 def create_draft():
-    require_admin()
     title = request.form.get('title')
     text = request.form.get('text')
     post_id = request.form.get('post-id')
@@ -348,8 +347,8 @@ def create_draft():
 
 
 @BP.route('/draft/<int:draft_id>', methods=['POST'])  # todo: use PUT
+@admin_required
 def update_draft(draft_id):
-    require_admin()
     draft = PO.get_draft(draft_id)
     if draft is None:
         abort(404)

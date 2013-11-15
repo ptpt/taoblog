@@ -1,4 +1,5 @@
 import random
+from functools import wraps
 from flask import (session, flash, g, redirect,
                    abort, url_for, request)
 
@@ -71,6 +72,14 @@ def require_login():
             redirect(url_for('session.render_login', next=request.url)))
 
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        require_login()
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def is_admin(app):
     if is_login():
         admin_email = app.config.get('ADMIN_EMAIL')
@@ -87,10 +96,7 @@ def is_admin(app):
             admin_or_not = False
     else:
         admin_or_not = False
-
     return admin_or_not
-
-
 
 
 def require_admin():
@@ -99,6 +105,14 @@ def require_admin():
             abort(403)
         raise JumpDirectly(
             redirect(url_for('session.render_login', next=request.url)))
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        require_admin()
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def get_next_url():
