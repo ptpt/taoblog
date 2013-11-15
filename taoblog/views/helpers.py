@@ -1,5 +1,4 @@
 import random
-import urllib
 from flask import (session, flash, g, redirect,
                    abort, url_for, request)
 
@@ -111,18 +110,3 @@ def get_next_url():
         # avoid the double urlencode happening.
         next_url = next_url.encode('utf-8')
     return str(next_url)
-
-
-def quote_token(token_tuple):
-    """ token tuple to token string """
-    return urllib.quote_plus(token_tuple[0]) + ' ' + urllib.quote_plus(token_tuple[1])
-
-
-def unquote_token(token_string):
-    """ token string to token pair """
-    token_pair = token_string.split(None, 1)
-    if len(token_pair) == 0:
-        token_pair = ['', '']
-    elif len(token_pair) == 1:
-        token_pair = token_pair + ['']
-    return [urllib.unquote_plus(token) for token in token_pair]
