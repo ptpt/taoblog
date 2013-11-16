@@ -59,10 +59,13 @@ def render_posts(year=None, month=None, tags=None):
         limit=app.config['POST_PERPAGE'],
         tags=tags and tags.split('+'),
         date=date_range)
-    pagination = Pagination(page, more,
-                            lambda page: url_for('post.render_posts',
-                                                 page=page, year=year,
-                                                 month=month, tags=tags))
+
+    def _page_generator(page):
+        return url_for('post.render_posts',
+                       page=page, year=year,
+                       month=month, tags=tags)
+
+    pagination = Pagination(page, more, _page_generator)
     return render_template('post/posts.html', posts=posts,
                            tags=tags and tags.split('+'),
                            pagination=pagination)
@@ -89,10 +92,13 @@ def archive(year=None, month=None, tags=None):
         offset=(page - 1) * app.config['POST_PERPAGE'],
         limit=app.config['POST_PERPAGE'],
         tags=tags and tags.split('+'), date=date_range)
-    pagination = Pagination(page, more,
-                            lambda page: url_for('post.archive',
-                                                 page=page, year=year,
-                                                 month=month, tags=tags))
+
+    def _page_generator(page):
+        return url_for('post.archive',
+                       page=page, year=year,
+                       month=month, tags=tags)
+
+    pagination = Pagination(page, more, _page_generator)
     return render_template('post/archive.html', posts=posts,
                            tags=tags and tags.split('+'),
                            tagcloud=PO.get_public_tags(),
