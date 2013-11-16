@@ -10,16 +10,11 @@ from .models import bind_engine
 DEBUG = False
 DATABASE_ECHO = False
 DATABASE_URI = 'sqlite:///%s' % tempfile.mkstemp()[1]
-
 POST_PERPAGE = 8
 POST_API_PERPAGE = 20
 POST_FEED_PERPAGE = 20
-
-ADMIN_NAME = 'admin'            # todo: remove it, and set to article author
-
-## is it ok to set it to None? Yes! default value None means no one is admin
-# ADMIN_EMAIL = None
-
+# no one is admin by default
+ADMIN_EMAIL = None
 BLOG_TITLE = 'Taoblog'
 # I18N_FOLDER = None
 SECRET_KEY = os.urandom(24)
