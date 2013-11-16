@@ -1,6 +1,6 @@
 from flask import (Blueprint, current_app as app,
                    request, flash, render_template,
-                   url_for, abort, redirect)
+                   url_for, abort, redirect, session)
 from werkzeug.contrib.atom import AtomFeed
 from datetime import datetime
 
