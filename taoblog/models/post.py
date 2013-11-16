@@ -11,17 +11,14 @@ from sqlalchemy.orm import (relationship, validates, backref, object_session)
 
 from ..helpers import validate_slug, get_date_range, markdown
 from . import Base, ModelError
-from .user import User
 
 
 post_tag_table = Table('_post_tag', Base.metadata,
                        Column('post_id', Integer, ForeignKey('post.id')),
                        Column('tag_id', Integer, ForeignKey('tag.id')))
-
-
-post_user_table = Table('_post_user', Base.metadata,
-                        Column('post_id', Integer, ForeignKey('post.id')),
-                        Column('user_id', Integer, ForeignKey('user.id')))
+post_readers_table = Table('_post_readers', Base.metadata,
+                           Column('post_id', Integer, ForeignKey('post.id')),
+                           Column('user_id', Integer, ForeignKey('user.id')))
 
 
 class PostError(ModelError):
@@ -109,7 +106,7 @@ class Post(Base):
             return None
 
     ################ readers ################
-    _readers = relationship('User', secondary=post_user_table,
+    _readers = relationship('User', secondary=post_readers_table,
                             backref='posts')
 
     @property
