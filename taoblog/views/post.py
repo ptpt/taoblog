@@ -7,11 +7,13 @@ from datetime import datetime
 from ..helpers import slugify, get_date_range, Pagination
 from ..models import Session, ModelError
 from ..models.post import Post, Draft, PostOperator
+from ..models.user import UserOperator
 from .helpers import require_int, JumpDirectly, admin_required
 
 
 BP = Blueprint('post', __name__)
 PO = PostOperator(Session())
+UO = UserOperator(Session())
 
 
 @BP.route('/feed/')
@@ -22,11 +24,11 @@ def atom_feed():
                     url=request.url_root,
                     subtitle=app.config.get('BLOG_SUBTITLE'))  # todo: use settings
     for post in posts:
+        author = UO.get_user(user_id=post.author_id)
         feed.add(post.title,
                  post.content,
                  content_type='html',
-                 # todo: let admin name be configurable
-                 author=app.config.get('ADMIN_NAME'),  # todo: use settings
+                 author=author.name,
                  url=url_for('post.render_post_by_permalink',
                              slug=post.slug,
                              year=post.created_year,
