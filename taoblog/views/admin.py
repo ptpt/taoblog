@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from flask import (Blueprint, current_app as app,
-                   render_template, g, request, flash,
+                   g, request, flash,
                    url_for, abort, redirect)
 
 from ..models import Session, ModelError
 from ..models.post import Post, PostOperator
 from ..helpers import get_date_range
-from .helpers import require_admin
+from .helpers import require_admin, render_template
 
 BP = Blueprint('admin', __name__)
 PO = PostOperator(Session())

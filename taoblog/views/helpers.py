@@ -1,13 +1,21 @@
 import random
 from functools import wraps
 from flask import (session, flash, g, redirect,
-                   abort, url_for, request)
+                   abort, url_for, request,
+                   render_template as flask_render_template)
 
 from ..models import Session
 from ..models.user import UserOperator
 
 
 UO = UserOperator(Session())
+
+
+def render_template(template_name, **context):
+    assert isinstance(template_name, basestring)
+    local_template_name = '{0}/{1}'.format(g.locale, template_name)
+    base_template_name = '{0}/{1}'.format('base', template_name)
+    return flask_render_template([local_template_name, base_template_name], **context)
 
 
 def check_consistency():

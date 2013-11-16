@@ -1,5 +1,5 @@
 from flask import (Blueprint, current_app as app,
-                   request, flash, render_template,
+                   request, flash,
                    url_for, abort, redirect, session)
 from werkzeug.contrib.atom import AtomFeed
 from datetime import datetime
@@ -8,7 +8,7 @@ from ..helpers import slugify, get_date_range, Pagination
 from ..models import Session, ModelError
 from ..models.post import Post, Draft, PostOperator
 from ..models.user import UserOperator
-from .helpers import require_int, JumpDirectly, admin_required
+from .helpers import require_int, JumpDirectly, admin_required, render_template
 
 
 BP = Blueprint('post', __name__)
@@ -86,6 +86,7 @@ def archive(year=None, month=None, tags=None):
                                       year=year,
                                       month=month,
                                       tags=tags))))
+    date_range = None
     try:
         date_range = year and get_date_range(year, month)
     except (ValueError, TypeError):
@@ -109,6 +110,7 @@ def archive(year=None, month=None, tags=None):
 
 @BP.route('/<int:year>/<int:month>/<string:slug>')
 def render_post_by_permalink(slug, year, month):
+    post = None
     try:
         post = PO.get_post_by_permalink(slug, year=year, month=month)
     except ModelError:

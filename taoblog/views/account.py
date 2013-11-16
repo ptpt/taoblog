@@ -2,12 +2,13 @@
 
 from flask import (Blueprint, request, g, current_app,
                    session, redirect, url_for,
-                   abort, render_template, flash)
+                   abort, flash)
 
 from ..models import Session, ModelError
 from ..models.user import User, UserOperator
 from .helpers import (save_account_to_session,
-                      check_consistency, get_next_url)
+                      check_consistency, get_next_url,
+                      render_template)
 from .oauth import choose_provider, BaseOAuthError
 
 

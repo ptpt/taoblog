@@ -6,7 +6,8 @@ from flask import (Blueprint, request, g, abort,
 
 from ..models import Session, ModelError
 from ..models.user import User, UserOperator
-from .helpers import check_consistency, save_account_to_session, get_next_url
+from .helpers import (check_consistency, save_account_to_session,
+                      render_template, get_next_url)
 
 
 BP = Blueprint('session', __name__)

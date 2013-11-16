@@ -1,4 +1,4 @@
-{% extends "_layout.html" %}
+{% extends "base/_layout.html" %}
 
 {% block head %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
@@ -45,8 +45,10 @@
                     {% if g.is_login -%}
                     <li><a href="{{ url_for('account.profile') }}">{{ localize('My Account') }}</a></li>
                     <li><a href="{{ url_for('session.logout', sid=session['sid']) }}">{{ localize('Logout') }}</a></li>
-                    {%- else -%}
-                    <li><a href="{{ url_for('session.render_login') }}">{{ localize('Login') }}</a></li>
+                    {%- elif config['GOOGLE_CONSUMER'] or config['FACEBOOK_CONSUMER'] -%}
+                    <li>
+                        <a href="{{ url_for('session.render_login') }}">{{ localize('Login') }}</a>
+                    </li>
                     {%- endif %}
                 </ul>
             </footer>
