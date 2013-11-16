@@ -30,15 +30,16 @@ class TaoblogTestCase(unittest.TestCase):
             self._app = app.test_client()
         return self._app
 
-    def login(self, email=None):
-        if email is None:
-            email = app.config['ADMIN_EMAIL'][0]
-        data = {'name': 'Admin',
-                'provider': 'openid',
-                'secret': 'a secret',
-                'email': email,
-                'sid': 'sid'}
+    def login(self, **data):
+        data.setdefault('name', 'User')
+        data.setdefault('provider', 'openid')
+        data.setdefault('secret', 'a secret')
+        data.setdefault('email', 'user@taoblog.com')
+        data.setdefault('sid', 'sid')
         return self.app.post('/login/testing', data=data)
+
+    def login_as_admin(self):
+        return self.login(email=app.config['ADMIN_EMAIL'][0])
 
     def logout(self):
         return self.app.post('/logout/testing',

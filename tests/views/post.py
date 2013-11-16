@@ -26,7 +26,7 @@ class PostViewTestCase(TaoblogTestCase):
         self.assertEqual(rv.status_code, 200)
 
         # success: login
-        self.login()
+        self.login_as_admin()
         rv = self.app.get('/admin/')
         self.assertEqual(rv.status_code, 200)
 

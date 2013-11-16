@@ -17,13 +17,13 @@ class APIViewTestCase(TaoblogTestCase):
                                       'slug': 'this is slug'})
         self.assertEqual(rv.status_code, 403)
         # fail: not admin
-        self.login('nono@gmail.com')
+        self.login()
         rv = self.app.post(api, data={'title': 'this is title',
                                       'slug': 'this-is-slug'})
         self.assertEqual(rv.status_code, 403)
         self.logout()
         # sucess
-        self.login('admin@taoblog.com')
+        self.login_as_admin()
         rv = self.app.post(api, data={'title': 'this is title',
                                       'text': 'hello world',
                                       'slug': 'this-is-another-slug'})
@@ -61,7 +61,7 @@ class APIViewTestCase(TaoblogTestCase):
     def test_get_posts(self):
         api = '/api/posts/'
         # get no post
-        self.login('author@taoblog.com')
+        self.login_as_admin()
         rv = self.app.get(api)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data)
