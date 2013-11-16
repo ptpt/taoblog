@@ -1,5 +1,6 @@
 from flask import (Blueprint, current_app as app,
-                   g, request, make_response, jsonify)
+                   g, request, make_response,
+                   jsonify, session)
 
 from ..models import ModelError, Session
 from ..models.post import Post, Draft, PostOperator
@@ -127,10 +128,12 @@ def create_post():
     private = bool(request.form.get('private', False))
     text = request.form.get('text')
     tags = request.form.get('tags')
+    author_id = session['uid']
     if tags:
         tags = tags.split()
     try:
-        post = Post(title=title, text=text, slug=slug)
+        post = Post(title=title, text=text,
+                    slug=slug, author_id=author_id)
         if private:
             post.status = Post.STATUS_PRIVATE
         PO.create_post(post)

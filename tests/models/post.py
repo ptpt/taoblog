@@ -52,7 +52,8 @@ class TestPost(TaoblogTestCase):
         self.db_teardown()
 
     def test_slug(self):
-        post = Post('hello world', 'world', 'hello-world')
+        post = Post(title='hello world', text='world',
+                    slug='hello-world', author_id=1)
         self.assertEqual(post.slug, 'hello-world')
 
         # invalid slug
@@ -72,7 +73,8 @@ class TestPost(TaoblogTestCase):
                                                        post.slug))
 
     def test_date(self):
-        post = Post('hello world', 'world', 'hello-world')
+        post = Post(title='hello world', text='world',
+                    slug='hello-world', author_id=1)
         self.assertIsNone(post.created_at)
         self.assertIsNone(post.updated_at)
         self.session.add(post)
@@ -84,8 +86,10 @@ class TestPost(TaoblogTestCase):
         self.assertIsNotNone(post.updated_at)
 
     def test_tag(self):
-        clojure = Post('clojure lisp', '', 'clojure-lisp')
-        scheme = Post('scheme lisp', '', 'scheme-lisp')
+        clojure = Post(title='clojure lisp', text='',
+                       slug='clojure-lisp', author_id=1)
+        scheme = Post(title='scheme lisp', text='',
+                      slug='scheme-lisp', author_id=1)
         # post not added to session, raise error
         self.assertRaises(RuntimeError, clojure.add_tags, ['clojure'])
         self.assertRaises(RuntimeError, clojure.remove_tags, ['clojure'])
@@ -119,32 +123,37 @@ class TestPost(TaoblogTestCase):
         self.assertIsNone(self.session.query(Tag).first())
         scheme.set_tags(['SCHEME', 'LISP', 'Scheme', 'Lisp'])
         self.assertEqual(set(tag.name for tag in self.session.query(Tag).all()), {'SCHEME', 'LISP'})
-        self.assertEqual(scheme.set_tags(['scheme', 'lisp', 'scheme', 'lisp']), ([], [])) # add none, remove none
+        self.assertEqual(scheme.set_tags(['scheme', 'lisp', 'scheme', 'lisp']), ([], []))  # add none, remove none
 
     def test_content(self):
-        post = Post('hello world', 'world', 'hello-world')
+        post = Post(title='hello world', text='world',
+                    slug='hello-world', author_id=1)
         self.assertEqual(post.content, '<p>%s</p>\n' % post.text)
         post.text = 'new world'
         self.assertEqual(post.content, '<p>%s</p>\n' % post.text)
 
     def test_query(self):
-        post = Post(title='a title', text='the first post', slug='a-title')
+        post = Post(title='a title', text='the first post',
+                    slug='a-title', author_id=1)
         self.session.add(post)
         self.session.commit()
         result = self.session.query(Post).filter_by(title='a title').one()
         self.assertEqual(result.title, post.title)
 
-        post = Post(title='a title', text='the second post', slug='a-title')
+        post = Post(title='a title', text='the second post',
+                    slug='a-title', author_id=1)
         self.session.add(post)
         self.session.commit()
-        result = self.session.query(Post).join(PostText).filter(PostText.text=='the second post').one()
+        result = self.session.query(Post).join(PostText)\
+            .filter(PostText.text=='the second post').one()
         self.assertEqual(result.text, post.text)
 
     def test_readers(self):
-        post = Post(title='jim tao peter', text='the text', slug='jim-tao-peter')
+        post = Post(title='jim tao peter', text='the text',
+                    slug='jim-tao-peter', author_id=1)
         self.session.add(post)
         self.session.commit()
-        from taoblog.models.user import User, UserOperator
+        from taoblog.models.user import User
         jim = User(name='Jim',
                    email='jim@aa.com',
                    provider='openid',
@@ -160,7 +169,8 @@ class TestPost(TaoblogTestCase):
         post.readers = [jim, tao, peter]
         self.assertEqual(post.status, Post.STATUS_PRIVATE)
         self.assertEqual(set(self.session.query(User).all()), {jim, tao, peter})
-        post2 = Post(title='jim tao', text='text', slug='jim-tao')
+        post2 = Post(title='jim tao', text='text',
+                     slug='jim-tao', author_id=1)
         self.assertEqual(post2.status, Post.STATUS_PUBLIC)
         dude = User(name='Dude',
                     email='dude@aa.com',
@@ -188,32 +198,38 @@ class TestPostOperator(TaoblogTestCase):
         self.db_teardown()
 
     def test_create_post(self):
-        post = Post(title='hello', text='world', slug='hello')
+        post = Post(title='hello', text='world',
+                    slug='hello', author_id=1)
         op = PostOperator(self.session)
         op.create_post(post)
         self.assertEqual(op.get_post(post.id), post)
         # same slug is not allowed
-        another_post = Post(title='hello', text='world', slug='hello')
+        another_post = Post(title='hello', text='world',
+                            slug='hello', author_id=1)
         self.assertRaises(ModelError, op.create_post, another_post)
 
     def test_get_posts(self):
         op = PostOperator(self.session)
         # create post
-        post = Post(title='hello', text='world', slug='hello-world')
+        post = Post(title='hello', text='world',
+                    slug='hello-world', author_id=1)
         op.create_post(post)
         self.assertEqual(op.get_post(post.id), post)
         # get public posts
-        haskell = Post(title='haskell-2012', text='world3', slug='hehe')
+        haskell = Post(title='haskell-2012', text='world3',
+                       slug='hehe', author_id=1)
         haskell.created_at = datetime(year=2012, month=4, day=29)
         op.create_post(haskell)
         haskell.add_tags(['haskell', 'fp'])
 
-        scheme = Post(title='scheme-2010', text='world2', slug='haha')
+        scheme = Post(title='scheme-2010', text='world2',
+                      slug='haha', author_id=1)
         scheme.created_at = datetime(year=2010, month=1, day=16)
         op.create_post(scheme)
         scheme.add_tags(['scheme', 'fp'])
 
-        clojure = Post(title='clojure-2009', text='world1', slug='haha')
+        clojure = Post(title='clojure-2009', text='world1',
+                       slug='haha', author_id=1)
         clojure.created_at = datetime(year=2009, month=12, day=13)
         op.create_post(clojure)
         clojure.add_tags(['clojure', 'fp'])

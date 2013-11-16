@@ -151,13 +151,15 @@ def create_post():              # todo: rename
     tags = request.form.get('tags', '').split()
     draft_id = require_int(request.form.get('draft-id'), 400)
     draft = PO.get_draft(draft_id)
+    author_id = session['uid']
     if draft is None:
         abort(404)
     try:
         # get title and text from draft
         post = Post(title=draft.title,
                     text=draft.text,
-                    slug=slug)
+                    slug=slug,
+                    author_id=author_id)
         PO.create_post(post)
     except ModelError as err:
         flash(err.message, category='error')
@@ -306,7 +308,8 @@ def prepare():
     fake_post = None
     try:
         # created date and updated date are required
-        fake_post = Post(title=title, text=text, slug=slug)
+        fake_post = Post(title=title, text=text,
+                         slug=slug, author_id=session['sid'])
         fake_post.created_at = datetime.utcnow()
         fake_post.updated_at = datetime.utcnow()
     except ModelError as err:

@@ -65,6 +65,7 @@ class Post(Base):
     updated_at = Column('updated_at', DateTime,
                         onupdate=func.now())
     version = Column(Integer, default=0)
+    author_id = Column(Integer, ForeignKey('user.id'))
 
     ################ text ################
     text_id = Column(Integer, ForeignKey('post_text.id'))
@@ -209,7 +210,7 @@ class Post(Base):
     __table_args__ = (Index('post_slug_date', 'slug', 'created_at'),
                       Index('post_status', 'status'))
 
-    def __init__(self, title, text, slug):
+    def __init__(self, title, text, slug, author_id):
         self.version = 0
         self.title = title
         self.slug = slug
@@ -217,6 +218,7 @@ class Post(Base):
         self.updated_at = None
         self.status = 0
         self.text = text
+        self.author_id = author_id
 
     def __repr__(self):
         return '<Post:%d/%d/%s>' % (self.created_year,
