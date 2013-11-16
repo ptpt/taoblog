@@ -165,8 +165,10 @@ class Post(Base):
         if len(to_add) == 0:
             return []
         # tags that exist in the database
-        existings = session.query(Tag).\
-            filter(func.lower(Tag.name).in_(lower_set(to_add))).all()
+        existings = session.query(Tag)\
+            .filter(func.lower(Tag.name)\
+            .in_(lower_set(to_add)))\
+            .all()
         # tags that are going to be created
         to_create = [name for name in to_add
                      if name.lower() not in
@@ -189,10 +191,14 @@ class Post(Base):
             return []
         # get the tags that will be deleted, are those
         # that only tag this post and will be removed
-        to_delete = session.query(Tag).select_from(post_tag_table).join(Tag).\
-            filter(func.lower(Tag.name).in_(
-                tag.name.lower() for tag in to_remove)).\
-                group_by(Tag.id).having(func.count(Tag.id) == 1).all()
+        to_delete = session.query(Tag)\
+            .select_from(post_tag_table)\
+            .join(Tag)\
+            .filter(func.lower(Tag.name)\
+            .in_(tag.name.lower() for tag in to_remove))\
+            .group_by(Tag.id)\
+            .having(func.count(Tag.id) == 1)\
+            .all()
         # remove tags from post
         self._tagobjs = [tag for tag in self._tagobjs if tag not in to_remove]
         self._tags = ' '.join(tag.name for tag in self._tagobjs)
@@ -246,7 +252,6 @@ class Post(Base):
             return self.created_at.month
 
     @staticmethod
-    # todo: rename to generate
     def generate_permalink(slug, year=None, month=None):
         if year is None:
             year = datetime.utcnow().year
@@ -345,22 +350,22 @@ class PostOperator(object):
         return self.session.query(Tag).filter_by(name=name).first()
 
     def get_public_tags(self):
-        return self.session.query(Tag).\
-            select_from(post_tag_table).\
-            join(Tag).join(Post).\
-            filter(Post.status == Post.STATUS_PUBLIC)
+        return self.session.query(Tag)\
+            .select_from(post_tag_table)\
+            .join(Tag).join(Post)\
+            .filter(Post.status == Post.STATUS_PUBLIC)
 
     def get_private_tags(self):
-        return self.session.query(Tag).\
-            select_from(post_tag_table).\
-            join(Tag).join(Post).\
-            filter(Post.status == Post.STATUS_PRIVATE)
+        return self.session.query(Tag)\
+            .select_from(post_tag_table)\
+            .join(Tag).join(Post)\
+            .filter(Post.status == Post.STATUS_PRIVATE)
 
     def get_trash_tags(self):
-        return self.session.query(Tag).\
-            select_from(post_tag_table).\
-            join(Tag).join(Post).\
-            filter(Post.status == Post.STATUS_TRASH)
+        return self.session.query(Tag)\
+            .select_from(post_tag_table)\
+            .join(Tag).join(Post)\
+            .filter(Post.status == Post.STATUS_TRASH)
 
     def update_tag(self, tag):
         """ update tag """
@@ -371,9 +376,9 @@ class PostOperator(object):
         self.session.delete(tag)
         self.session.commit()
 
-    def get_post(self, id):
+    def get_post(self, post_id):
         """ return a Post object or None """
-        return self.session.query(Post).get(id)
+        return self.session.query(Post).get(post_id)
 
     def get_post_by_permalink(self, slug, year=None, month=None):
         now = datetime.utcnow()
@@ -385,9 +390,10 @@ class PostOperator(object):
             start, end = get_date_range(year, month)
         except (ValueError, TypeError):
             raise ModelError('invalid date')
-        return self.session.query(Post).filter(and_(Post.created_at >= start,
-                                                    Post.created_at < end,
-                                                    Post.slug == slug)).first()
+        return self.session.query(Post)\
+            .filter(and_(Post.created_at >= start,
+                         Post.created_at < end,
+                         Post.slug == slug)).first()
 
     def query_posts(self, status, offset=0, limit=20,
                     tags=None, date=None, sort=None, asc=False):
@@ -396,8 +402,9 @@ class PostOperator(object):
         # see: http://www.simple-talk.com/sql/t-sql-programming/divided-we-stand-the-sql-of-relational-division/
         if tags:
             q = q.select_from(post_tag_table).join(Post).join(Tag)\
-                .filter(Tag.name.in_(tags)).group_by(Post.id).\
-                having(func.count(Post.id) == len(tags))
+                .filter(Tag.name.in_(tags))\
+                .group_by(Post.id)\
+                .having(func.count(Post.id) == len(tags))
         if date:
             q = q.filter(and_(Post.created_at >= date[0],
                               Post.created_at < date[1]))
