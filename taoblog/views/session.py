@@ -10,14 +10,14 @@ from .helpers import (check_consistency, save_account_to_session,
                       render_template, get_next_url)
 
 
-BP = Blueprint('session', __name__)
+session_bp = Blueprint('session', __name__)
 UO = UserOperator(Session())
 
 
-BP.before_request(check_consistency)
+session_bp.before_request(check_consistency)
 
 
-@BP.route('/login')
+@session_bp.route('/login')
 def render_login():
     next_url = get_next_url()
     if g.is_login:
@@ -26,7 +26,7 @@ def render_login():
         return render_template('session/login.html', next=next_url)
 
 
-@BP.route('/logout', methods=['GET', 'POST'])
+@session_bp.route('/logout', methods=['GET', 'POST'])
 def logout():
     if g.is_login and request.values.get('sid') == session.get('sid'):
         session.clear()

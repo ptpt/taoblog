@@ -7,7 +7,7 @@ from ..models.post import Post, Draft, PostOperator
 from .helpers import (require_int, JumpDirectly)
 
 
-BP = Blueprint('api', __name__)
+api_bp = Blueprint('api', __name__)
 PO = PostOperator(Session())
 
 
@@ -59,7 +59,7 @@ def get_status_code(status_string):
     return status_code
 
 
-@BP.route('/drafts/', methods=['DELETE'])
+@api_bp.route('/drafts/', methods=['DELETE'])
 def delete_drafts():
     if not g.is_admin:
         return jsonify_error('admin required', 403)
@@ -75,7 +75,7 @@ def delete_drafts():
     return jsonify({'stat': 'ok', 'response': {'total_drafts': deleted_rows}})
 
 
-@BP.route('/posts/', methods=['DELETE'])
+@api_bp.route('/posts/', methods=['DELETE'])
 def delete_posts():
     """
     Delete posts from server.
@@ -105,7 +105,7 @@ def delete_posts():
     return jsonify({'stat': 'ok', 'response': {'total_posts': len(posts)}})
 
 
-@BP.route('/posts/', methods=['POST'])
+@api_bp.route('/posts/', methods=['POST'])
 def create_post():
     """
     Create a post. Return the post.
@@ -144,7 +144,7 @@ def create_post():
     return jsonify_posts([post])
 
 
-@BP.route('/posts/')
+@api_bp.route('/posts/')
 def get_posts():
     """
     Get posts.
@@ -213,16 +213,16 @@ def set_status(status):
     return jsonify_posts(posts, meta=True)
 
 
-@BP.route('/posts/trash', methods=['POST'])
+@api_bp.route('/posts/trash', methods=['POST'])
 def trash_posts():
     return set_status(Post.STATUS_TRASH)
 
 
-@BP.route('/posts/publish', methods=['POST'])
+@api_bp.route('/posts/publish', methods=['POST'])
 def publish_posts():
     return set_status(Post.STATUS_PUBLIC)
 
 
-@BP.route('/posts/hide', methods=['POST'])
+@api_bp.route('/posts/hide', methods=['POST'])
 def hide_posts():
     return set_status(Post.STATUS_PRIVATE)

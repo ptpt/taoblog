@@ -7,20 +7,20 @@ from ..i18n import I18n
 from .helpers import (JumpDirectly, is_login,
                       is_admin, require_admin)
 
-from .post import BP as bp_post
-from .api import BP as bp_api
-from .account import BP as bp_account
-from .admin import BP as bp_admin
-from .session import BP as bp_session
+from .post import post_bp
+from .api import api_bp
+from .account import account_bp
+from .admin import admin_bp
+from .session import session_bp
 from .oauth import (FacebookOAuth, GoogleOAuth)
 
 
 def configure_app(app):
-    app.register_blueprint(bp_post)
-    app.register_blueprint(bp_api, url_prefix='/api')
-    app.register_blueprint(bp_admin, url_prefix='/admin')
-    app.register_blueprint(bp_account, url_prefix='/account')
-    app.register_blueprint(bp_session)
+    app.register_blueprint(post_bp)
+    app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(account_bp, url_prefix='/account')
+    app.register_blueprint(session_bp)
 
     if 'FACEBOOK_CONSUMER' in app.config:
         app.register_blueprint(FacebookOAuth(app).blueprint)

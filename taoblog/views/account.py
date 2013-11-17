@@ -12,14 +12,14 @@ from .helpers import (save_account_to_session,
 from .oauth import choose_provider, BaseOAuthError
 
 
-BP = Blueprint('account', __name__)
+account_bp = Blueprint('account', __name__)
 UO = UserOperator(Session())
 
 
-BP.before_request(check_consistency)
+account_bp.before_request(check_consistency)
 
 
-@BP.route('/')
+@account_bp.route('/')
 def profile():
     next_url = get_next_url()
     if g.is_login:
@@ -31,7 +31,7 @@ def profile():
         return redirect(url_for('session.render_login'))
 
 
-@BP.route('/delete', methods=['POST'])
+@account_bp.route('/delete', methods=['POST'])
 def delete_user():
     if not g.is_login:
         # todo: clear session fields
@@ -47,7 +47,7 @@ def delete_user():
     return redirect(get_next_url())
 
 
-@BP.route('/update', methods=['POST'])
+@account_bp.route('/update', methods=['POST'])
 def update_user():
     if not g.is_login:
         # todo: clear session fields
@@ -76,7 +76,7 @@ def update_user():
     return redirect(next_url)
 
 
-@BP.route('/create', methods=['POST'])
+@account_bp.route('/create', methods=['POST'])
 def create_user():
     if not ('provider' in session and 'token' in session):
         abort(403)

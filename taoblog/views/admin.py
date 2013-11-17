@@ -9,14 +9,14 @@ from ..models.post import Post, PostOperator
 from ..helpers import get_date_range
 from .helpers import require_admin, render_template
 
-BP = Blueprint('admin', __name__)
+admin_bp = Blueprint('admin', __name__)
 PO = PostOperator(Session())
 
 
-BP.before_request(require_admin)
+admin_bp.before_request(require_admin)
 
 
-@BP.route('/')
+@admin_bp.route('/')
 def render_dashboard():
     return render_template('admin/compose.html')
 
@@ -43,13 +43,13 @@ def get_status_code(status_string):
     return status_code[0] if len(status_code) == 1 else status_code
 
 
-@BP.route('/posts/<string:status>/tagged/<string:tags>')
-@BP.route('/posts/<string:status>/tagged/<string:tags>/<int:year>/<int:month>')
-@BP.route('/posts/<string:status>/tagged/<string:tags>/<int:year>')
-@BP.route('/posts/<string:status>/<int:year>')
-@BP.route('/posts/<string:status>/<int:year>/<int:month>')
-@BP.route('/posts/<string:status>/')
-@BP.route('/posts/')
+@admin_bp.route('/posts/<string:status>/tagged/<string:tags>')
+@admin_bp.route('/posts/<string:status>/tagged/<string:tags>/<int:year>/<int:month>')
+@admin_bp.route('/posts/<string:status>/tagged/<string:tags>/<int:year>')
+@admin_bp.route('/posts/<string:status>/<int:year>')
+@admin_bp.route('/posts/<string:status>/<int:year>/<int:month>')
+@admin_bp.route('/posts/<string:status>/')
+@admin_bp.route('/posts/')
 def render_posts(status='public+private', year=None, month=None, tags=None):
     sort = request.args.get('sort', 'created_at')
     asc = 'asc' in request.args
@@ -75,12 +75,12 @@ def render_posts(status='public+private', year=None, month=None, tags=None):
                            posts=posts)
 
 
-@BP.route('/drafts/')
+@admin_bp.route('/drafts/')
 def render_drafts():
     drafts = PO.get_drafts(limit=None)
     return render_template('admin/drafts.html', drafts=drafts)
 
 
-@BP.route('/compose')
+@admin_bp.route('/compose')
 def render_compose():
     return render_template('admin/compose.html')

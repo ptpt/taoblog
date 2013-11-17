@@ -11,12 +11,12 @@ from ..models.user import UserOperator
 from .helpers import require_int, JumpDirectly, admin_required, render_template
 
 
-BP = Blueprint('post', __name__)
+post_bp = Blueprint('post', __name__)
 PO = PostOperator(Session())
 UO = UserOperator(Session())
 
 
-@BP.route('/feed/')
+@post_bp.route('/feed/')
 def atom_feed():
     posts, _ = PO.get_public_posts(limit=app.config['POST_FEED_PERPAGE'])
     feed = AtomFeed(app.config.get('BLOG_TITLE'),  # todo: use settings
@@ -39,12 +39,12 @@ def atom_feed():
     return feed.get_response()
 
 
-@BP.route('/<int:year>/<int:month>/')
-@BP.route('/<int:year>/')
-@BP.route('/tagged/<string:tags>/<int:year>/<int:month>')
-@BP.route('/tagged/<string:tags>/<int:year>/')
-@BP.route('/tagged/<string:tags>/')
-@BP.route('/')
+@post_bp.route('/<int:year>/<int:month>/')
+@post_bp.route('/<int:year>/')
+@post_bp.route('/tagged/<string:tags>/<int:year>/<int:month>')
+@post_bp.route('/tagged/<string:tags>/<int:year>/')
+@post_bp.route('/tagged/<string:tags>/')
+@post_bp.route('/')
 def render_posts(year=None, month=None, tags=None):
     page = require_int(
         request.args.get('page', 1),
@@ -73,12 +73,12 @@ def render_posts(year=None, month=None, tags=None):
                            pagination=pagination)
 
 
-@BP.route('/archive/<int:year>/<int:month>/')
-@BP.route('/archive/<int:year>/')
-@BP.route('/archive/tagged/<string:tags>/<int:year>/<int:month>/')
-@BP.route('/archive/tagged/<string:tags>/<int:year>/')
-@BP.route('/archive/tagged/<string:tags>/')
-@BP.route('/archive/')
+@post_bp.route('/archive/<int:year>/<int:month>/')
+@post_bp.route('/archive/<int:year>/')
+@post_bp.route('/archive/tagged/<string:tags>/<int:year>/<int:month>/')
+@post_bp.route('/archive/tagged/<string:tags>/<int:year>/')
+@post_bp.route('/archive/tagged/<string:tags>/')
+@post_bp.route('/archive/')
 def archive(year=None, month=None, tags=None):
     page = require_int(
         request.args.get('page', 1),
@@ -108,7 +108,7 @@ def archive(year=None, month=None, tags=None):
                            pagination=pagination)
 
 
-@BP.route('/<int:year>/<int:month>/<string:slug>')
+@post_bp.route('/<int:year>/<int:month>/<string:slug>')
 def render_post_by_permalink(slug, year, month):
     post = None
     try:
@@ -121,7 +121,7 @@ def render_post_by_permalink(slug, year, month):
     return render_template('post/post.html', post=post)
 
 
-@BP.route('/post/<int:post_id>')
+@post_bp.route('/post/<int:post_id>')
 def render_post(post_id):
     post = PO.get_post(post_id)
     if post is None:
@@ -132,7 +132,7 @@ def render_post(post_id):
                             month=post.created_month))
 
 
-@BP.route('/post/<int:post_id>/edit')
+@post_bp.route('/post/<int:post_id>/edit')
 @admin_required
 def edit_post(post_id):
     post = PO.get_post(post_id)
@@ -141,7 +141,7 @@ def edit_post(post_id):
     return render_template('admin/compose.html', post=post)
 
 
-@BP.route('/', methods=['POST'])
+@post_bp.route('/', methods=['POST'])
 @admin_required
 def create_post():              # todo: rename
     """
@@ -177,7 +177,7 @@ def create_post():              # todo: rename
                             month=post.created_month))
 
 
-@BP.route('/post/<int:post_id>', methods=['POST'])
+@post_bp.route('/post/<int:post_id>', methods=['POST'])
 @admin_required
 def update_post(post_id):
     """
@@ -219,7 +219,7 @@ def update_post(post_id):
                             month=post.created_month))
 
 
-@BP.route('/post/<int:post_id>/delete', methods=['POST'])
+@post_bp.route('/post/<int:post_id>/delete', methods=['POST'])
 @admin_required
 def delete_post(post_id):
     post = PO.get_post(post_id)
@@ -243,7 +243,7 @@ def try_slugify(title, start=0, delim=u'-'):
         suffix += 1
 
 
-@BP.route('/prepare', methods=['POST', 'GET'])
+@post_bp.route('/prepare', methods=['POST', 'GET'])
 @admin_required
 def prepare():
     """
@@ -327,7 +327,7 @@ def prepare():
     return render_template('post/preview.html', post=fake_post, draft=draft)
 
 
-@BP.route('/draft/<int:draft_id>/edit')
+@post_bp.route('/draft/<int:draft_id>/edit')
 @admin_required
 def edit_draft(draft_id):
     draft = PO.get_draft(draft_id)
@@ -339,7 +339,7 @@ def edit_draft(draft_id):
         return render_template('admin/compose.html', draft=draft)
 
 
-@BP.route('/drafts/', methods=['POST'])
+@post_bp.route('/drafts/', methods=['POST'])
 @admin_required
 def create_draft():
     title = request.form.get('title')
@@ -359,7 +359,7 @@ def create_draft():
     return redirect(url_for('.edit_draft', draft_id=draft.id))
 
 
-@BP.route('/draft/<int:draft_id>', methods=['POST'])  # todo: use PUT
+@post_bp.route('/draft/<int:draft_id>', methods=['POST'])  # todo: use PUT
 @admin_required
 def update_draft(draft_id):
     draft = PO.get_draft(draft_id)
