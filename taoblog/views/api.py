@@ -8,7 +8,7 @@ from .helpers import (require_int, JumpDirectly)
 
 
 api_bp = Blueprint('api', __name__)
-PO = PostOperator(Session())
+post_op = PostOperator(Session())
 
 
 def get_plain_dict(post, meta):
@@ -66,10 +66,10 @@ def delete_drafts():
     ids = [require_int(id, JumpDirectly(jsonify_error('invalid draft id', 400)))
            for id in request.args.get('bulk', '').split(',') if id.strip()]
     if len(ids) > 0:
-        deleted_rows = PO.session.query(Draft).\
+        deleted_rows = post_op.session.query(Draft).\
             filter(Draft.id.in_(ids)).\
             delete(synchronize_session='fetch')
-        PO.session.commit()
+        post_op.session.commit()
     else:
         deleted_rows = 0
     return jsonify({'stat': 'ok', 'response': {'total_drafts': deleted_rows}})
@@ -92,16 +92,16 @@ def delete_posts():
     ids = [require_int(id, JumpDirectly(jsonify_error('invalid post id', 400)))
            for id in request.args.get('bulk', '').split(',') if id.strip()]
     if len(ids) > 0:
-        posts = PO.session.query(Post).filter(Post.id.in_(ids)).all()
+        posts = post_op.session.query(Post).filter(Post.id.in_(ids)).all()
     # get all posts in specified status
     status = request.args.get('status')
     if status:
         status_code = get_status_code(status)
-        posts += PO.session.query(Post).\
+        posts += post_op.session.query(Post).\
             filter(Post.status.in_(status_code)).all()
     # delete all of them
     if len(posts) > 0:
-        PO.delete_posts(posts)
+        post_op.delete_posts(posts)
     return jsonify({'stat': 'ok', 'response': {'total_posts': len(posts)}})
 
 
@@ -122,7 +122,7 @@ def create_post():
     slug = request.form.get('slug')
     if not slug:
         return jsonify_error('slug required', 400)
-    post = PO.get_post_by_permalink(slug)
+    post = post_op.get_post_by_permalink(slug)
     if post is not None:
         return jsonify_error('slug is not unique', 400)
     private = bool(request.form.get('private', False))
@@ -136,7 +136,7 @@ def create_post():
                     slug=slug, author_id=author_id)
         if private:
             post.status = Post.STATUS_PRIVATE
-        PO.create_post(post)
+        post_op.create_post(post)
         if tags:
             post.set_tags(tags)
     except ModelError as err:
@@ -169,7 +169,7 @@ def get_posts():
     if id is None:
         # get multi posts
         try:
-            posts, more = PO.query_posts(
+            posts, more = post_op.query_posts(
                 status=status_code, offset=offset, limit=limit,
                 tags=tags and tags.split('+'),
                 date=None, sort=sort, asc=asc)
@@ -179,7 +179,7 @@ def get_posts():
         # get single post when post id is specified
         more = False
         id = require_int(id, JumpDirectly(jsonify_error('invalid id', 400)))
-        post = PO.get_post(id)
+        post = post_op.get_post(id)
         if post is None:
             return jsonify_error('post not found', 404)
         else:
@@ -206,10 +206,10 @@ def set_status(status):
         return jsonify_error('invalid id parameter', 400)
     id_list = [require_int(id, JumpDirectly(jsonify_error('invalid id', 400)))
                for id in id_param.split(',')]
-    posts = PO.session.query(Post).filter(Post.id.in_(id_list)).all()
+    posts = post_op.session.query(Post).filter(Post.id.in_(id_list)).all()
     for post in posts:
         post.status = status
-    PO.session.commit()
+    post_op.session.commit()
     return jsonify_posts(posts, meta=True)
 
 

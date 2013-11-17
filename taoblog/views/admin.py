@@ -10,7 +10,7 @@ from ..helpers import get_date_range
 from .helpers import require_admin, render_template
 
 admin_bp = Blueprint('admin', __name__)
-PO = PostOperator(Session())
+post_op = PostOperator(Session())
 
 
 admin_bp.before_request(require_admin)
@@ -59,7 +59,7 @@ def render_posts(status='public+private', year=None, month=None, tags=None):
     except (ValueError, TypeError):
         abort(400)
     try:
-        posts, more = PO.query_posts(status=status_code,
+        posts, more = post_op.query_posts(status=status_code,
                                      limit=app.config['POST_PERPAGE'],
                                      tags=tags and tags.split('+'),
                                      date=date_range,
@@ -77,7 +77,7 @@ def render_posts(status='public+private', year=None, month=None, tags=None):
 
 @admin_bp.route('/drafts/')
 def render_drafts():
-    drafts = PO.get_drafts(limit=None)
+    drafts = post_op.get_drafts(limit=None)
     return render_template('admin/drafts.html', drafts=drafts)
 
 

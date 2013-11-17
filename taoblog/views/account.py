@@ -13,7 +13,7 @@ from .oauth import choose_provider, BaseOAuthError
 
 
 account_bp = Blueprint('account', __name__)
-UO = UserOperator(Session())
+user_op = UserOperator(Session())
 
 
 account_bp.before_request(check_consistency)
@@ -37,8 +37,8 @@ def delete_user():
         # todo: clear session fields
         abort(403)
     if request.values.get('sid') == session.get('sid'):
-        user = UO.get_user(session['uid'])
-        UO.delete_user(user)
+        user = user_op.get_user(session['uid'])
+        user_op.delete_user(user)
         session.clear()
         flash('You\'ve been logout', category='success')
         flash('Your account has been deleted', category='success')
@@ -61,10 +61,10 @@ def update_user():
     if email:
         email = email.strip()
         kwargs['email'] = email
-    user = UO.get_user(session['uid'])
+    user = user_op.get_user(session['uid'])
     next_url = get_next_url()
     try:
-        UO.update_user(user, **kwargs)
+        user_op.update_user(user, **kwargs)
     except ModelError as err:
         flash(err.message, category='error')
         return redirect(url_for('account.profile',
@@ -99,7 +99,7 @@ def create_user():
                        email=email,
                        provider=provider,
                        identity=identity)
-        UO.create_user(account)
+        user_op.create_user(account)
     except ModelError as err:
         flash(err.message, category='error')
         return redirect(url_for('account.profile',

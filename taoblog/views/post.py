@@ -12,19 +12,19 @@ from .helpers import require_int, JumpDirectly, admin_required, render_template
 
 
 post_bp = Blueprint('post', __name__)
-PO = PostOperator(Session())
-UO = UserOperator(Session())
+post_op = PostOperator(Session())
+user_op = UserOperator(Session())
 
 
 @post_bp.route('/feed/')
 def atom_feed():
-    posts, _ = PO.get_public_posts(limit=app.config['POST_FEED_PERPAGE'])
+    posts, _ = post_op.get_public_posts(limit=app.config['POST_FEED_PERPAGE'])
     feed = AtomFeed(app.config.get('BLOG_TITLE'),  # todo: use settings
                     feed_url=url_for('post.atom_feed', _external=True),
                     url=request.url_root,
                     subtitle=app.config.get('BLOG_SUBTITLE'))  # todo: use settings
     for post in posts:
-        author = UO.get_user(user_id=post.author_id)
+        author = user_op.get_user(user_id=post.author_id)
         feed.add(post.title,
                  post.content,
                  content_type='html',
@@ -56,7 +56,7 @@ def render_posts(year=None, month=None, tags=None):
         date_range = year and get_date_range(year, month)
     except (ValueError, TypeError):
         abort(400)
-    posts, more = PO.get_public_posts(
+    posts, more = post_op.get_public_posts(
         offset=(page - 1) * app.config['POST_PERPAGE'],
         limit=app.config['POST_PERPAGE'],
         tags=tags and tags.split('+'),
@@ -91,7 +91,7 @@ def archive(year=None, month=None, tags=None):
         date_range = year and get_date_range(year, month)
     except (ValueError, TypeError):
         abort(400)
-    posts, more = PO.get_public_posts(
+    posts, more = post_op.get_public_posts(
         offset=(page - 1) * app.config['POST_PERPAGE'],
         limit=app.config['POST_PERPAGE'],
         tags=tags and tags.split('+'), date=date_range)
@@ -104,7 +104,7 @@ def archive(year=None, month=None, tags=None):
     pagination = Pagination(page, more, _page_generator)
     return render_template('post/archive.html', posts=posts,
                            tags=tags and tags.split('+'),
-                           tagcloud=PO.get_public_tags(),
+                           tagcloud=post_op.get_public_tags(),
                            pagination=pagination)
 
 
@@ -112,7 +112,7 @@ def archive(year=None, month=None, tags=None):
 def render_post_by_permalink(slug, year, month):
     post = None
     try:
-        post = PO.get_post_by_permalink(slug, year=year, month=month)
+        post = post_op.get_post_by_permalink(slug, year=year, month=month)
     except ModelError:
         # custom date might be invalid
         abort(400)
@@ -123,7 +123,7 @@ def render_post_by_permalink(slug, year, month):
 
 @post_bp.route('/post/<int:post_id>')
 def render_post(post_id):
-    post = PO.get_post(post_id)
+    post = post_op.get_post(post_id)
     if post is None:
         abort(404)
     return redirect(url_for('post.render_post_by_permalink',
@@ -135,7 +135,7 @@ def render_post(post_id):
 @post_bp.route('/post/<int:post_id>/edit')
 @admin_required
 def edit_post(post_id):
-    post = PO.get_post(post_id)
+    post = post_op.get_post(post_id)
     if post is None:
         abort(404)
     return render_template('admin/compose.html', post=post)
@@ -154,7 +154,7 @@ def create_post():              # todo: rename
     slug = request.form.get('slug') or abort(400)
     tags = request.form.get('tags', '').split()
     draft_id = require_int(request.form.get('draft-id'), 400)
-    draft = PO.get_draft(draft_id)
+    draft = post_op.get_draft(draft_id)
     author_id = session['uid']
     if draft is None:
         abort(404)
@@ -164,13 +164,13 @@ def create_post():              # todo: rename
                     text=draft.text,
                     slug=slug,
                     author_id=author_id)
-        PO.create_post(post)
+        post_op.create_post(post)
     except ModelError as err:
         flash(err.message, category='error')
         return redirect(url_for('post.prepare'))
     post.set_tags(tags)
     # create successfully, then delete draft
-    PO.delete_draft(draft)
+    post_op.delete_draft(draft)
     return redirect(url_for('post.render_post_by_permalink',
                             slug=post.slug,
                             year=post.created_year,
@@ -187,11 +187,11 @@ def update_post(post_id):
     * required post data: post-id, draft-id
     * optional post data: tags, slug
     """
-    post = PO.get_post(post_id)
+    post = post_op.get_post(post_id)
     if post is None:
         abort(404)
     # assign title and text in draft to post
-    draft = PO.get_draft(require_int(request.form.get('draft-id'), 400))
+    draft = post_op.get_draft(require_int(request.form.get('draft-id'), 400))
     if draft is None:
         abort(400)
     try:
@@ -212,7 +212,7 @@ def update_post(post_id):
     tags = request.form.get('tags')
     if tags:
         post.set_tags(tags.split())
-    PO.delete_draft(draft)
+    post_op.delete_draft(draft)
     return redirect(url_for('post.render_post_by_permalink',
                             slug=post.slug,
                             year=post.created_year,
@@ -222,10 +222,10 @@ def update_post(post_id):
 @post_bp.route('/post/<int:post_id>/delete', methods=['POST'])
 @admin_required
 def delete_post(post_id):
-    post = PO.get_post(post_id)
+    post = post_op.get_post(post_id)
     if post is None:
         abort(404)
-    PO.delete_post(post)
+    post_op.delete_post(post)
     return redirect(url_for('post.render_posts'))
 
 
@@ -237,7 +237,7 @@ def try_slugify(title, start=0, delim=u'-'):
             slug = slugify('%s%s%d' % (title, delim, suffix), delim)
         else:
             slug = slugify(title)
-        post = PO.get_post_by_permalink(slug)
+        post = post_op.get_post_by_permalink(slug)
         if post is None:
             return slug
         suffix += 1
@@ -264,36 +264,36 @@ def prepare():
 
         if post_id is not None:
             post_id = require_int(post_id, 400)
-            post = PO.get_post(post_id)
+            post = post_op.get_post(post_id)
             if post is None:
                 abort(400)
             if post.draft:
                 ######## editing a post with draft saved
                 draft = post.draft
                 draft.title, draft.text = title, text
-                PO.update_draft(draft)
+                post_op.update_draft(draft)
             else:
                 ######## editing a post
                 draft = Draft(title, text)
                 draft.post = post
-                PO.create_draft(draft)
+                post_op.create_draft(draft)
 
         elif draft_id is not None:
             ######## editing a draft
             draft_id = require_int(draft_id, 400)
-            draft = PO.get_draft(draft_id)
+            draft = post_op.get_draft(draft_id)
             if draft is None:
                 abort(400)
             draft.title, draft.text = title, text
-            PO.update_draft(draft)
+            post_op.update_draft(draft)
         else:
             ######## editing a scratch
             draft = Draft(title, text)
-            PO.create_draft(draft)
+            post_op.create_draft(draft)
 
     elif request.method == 'GET':
         # always show the most recently saved draft
-        draft = PO.get_drafts(limit=1)
+        draft = post_op.get_drafts(limit=1)
         if len(draft):
             draft = draft[0]
         else:
@@ -330,7 +330,7 @@ def prepare():
 @post_bp.route('/draft/<int:draft_id>/edit')
 @admin_required
 def edit_draft(draft_id):
-    draft = PO.get_draft(draft_id)
+    draft = post_op.get_draft(draft_id)
     if draft is None:
         abort(404)
     if draft.post is not None:
@@ -352,20 +352,20 @@ def create_draft():
         return redirect(url_for('admin.compose'))
     post = None
     if post_id is not None:
-        post = PO.get_post(require_int(post_id, 400))
+        post = post_op.get_post(require_int(post_id, 400))
     if post:
         draft.post = post
-    PO.create_draft(draft)      # todo: rename create_draft to add_draft
+    post_op.create_draft(draft)      # todo: rename create_draft to add_draft
     return redirect(url_for('.edit_draft', draft_id=draft.id))
 
 
 @post_bp.route('/draft/<int:draft_id>', methods=['POST'])  # todo: use PUT
 @admin_required
 def update_draft(draft_id):
-    draft = PO.get_draft(draft_id)
+    draft = post_op.get_draft(draft_id)
     if draft is None:
         abort(404)
     draft.title = request.form.get('title')
     draft.text = request.form.get('text')
-    PO.update_draft(draft)
+    post_op.update_draft(draft)
     return redirect(url_for('post.edit_draft', draft_id=draft.id))

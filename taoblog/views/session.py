@@ -11,7 +11,7 @@ from .helpers import (check_consistency, save_account_to_session,
 
 
 session_bp = Blueprint('session', __name__)
-UO = UserOperator(Session())
+user_op = UserOperator(Session())
 
 
 session_bp.before_request(check_consistency)

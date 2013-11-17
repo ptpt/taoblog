@@ -8,7 +8,7 @@ from ..models import Session
 from ..models.user import UserOperator
 
 
-UO = UserOperator(Session())
+user_op = UserOperator(Session())
 
 
 def render_template(template_name, **context):
@@ -25,7 +25,7 @@ def check_consistency():
     """
     if 'uid' not in session:
         return
-    account = UO.get_user(session['uid'])
+    account = user_op.get_user(session['uid'])
     if not (account and
             account.id == session['uid']
             and 'email' in session
