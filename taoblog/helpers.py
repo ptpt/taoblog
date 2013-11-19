@@ -136,13 +136,9 @@ def import_file(path):
             fp.close()
 
 
-def normalize_path(*paths):
-    if len(paths) > 1:
-        path = os.path.join(*paths)
-    else:
-        path = paths[0]
+def normalize_path(path, *paths):
+    path = os.path.join(path, *paths)
     path = os.path.expanduser(path)
-    path = os.path.normpath(path)
     path = os.path.abspath(path)
     return path
 
