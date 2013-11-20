@@ -1,14 +1,25 @@
 {%- extends "base/post/_layout.html" -%}
 
 {% block nav %}
-                        <li><a href="{{ url_for('post.archive') }}">{{ localize('Archive') }}</a></li>
-                        <li class="focus"><a href="{{ url_for('post.render_posts') }}">{{ localize('Home') }}</a></li>
+                        <li><a href="{{ url_for('post.archive') }}">Archive</a></li>
+                        <li class="focus"><a href="{{ url_for('post.render_posts') }}">Home</a></li>
 {% endblock %}
 
 {% block main %}
-            {% if tags -%}
-            <h3 class="tagged">{{ localize('posts tagged with [tags]', tags=tags)|safe }}</h3>
-            {%- endif %}
+            {% if tags %}
+            <h3 class="tagged">Posts tagged with&nbsp;
+                {%- for tag in tags -%}
+                    {%- if not loop.first -%}
+                        {%- if loop.last -%}
+                            &nbsp;and&nbsp;
+                        {%- else -%}
+                            ,&nbsp;
+                        {%- endif -%}
+                    {%- endif -%}
+                    <span>{{ tag|e }}</span>
+                {%- endfor -%}
+            </h3>
+            {% endif %}
 
             {% for post in posts %}
             <article class="post overview">
@@ -23,12 +34,12 @@
 
             {% if not pagination.single %}
             <nav class="pagination">
-                {% if pagination.prev_url -%}
-                <a class="previous" href="{{ pagination.prev_url }}">{{ localize('Previous Page') }}</a>
+                {%- if pagination.prev_url -%}
+                    <a class="previous" href="{{ pagination.prev_url }}">{% block previous_page %}Previous Page{% endblock previous_page %}</a>
                 {%- endif -%}
                 {%- if pagination.next_url -%}
-                <a class="next" href="{{ pagination.next_url }}">{{ localize('Next Page') }}</a>
-                {%- endif %}
+                    <a class="next" href="{{ pagination.next_url }}">{% block next_page %}Next Page{% endblock next_page %}</a>
+                {%- endif -%}
             </nav>
             {% endif %}
 {% endblock %}

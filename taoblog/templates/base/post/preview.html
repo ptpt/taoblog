@@ -16,13 +16,13 @@
                     <input type="input" name="tags" autocomplete="off" value="{{ draft.post.tags | join(' ') }}">
                 </div>
                 <menu type="toolbar" class="right-column">
-                    <li><a href="{{ url_for('post.edit_draft', draft_id=draft.id) }}">{{ localize('edit') }}</a></li>
+                    <li><a href="{{ url_for('post.edit_draft', draft_id=draft.id) }}">{% block edit %}edit{% endblock edit %}</a></li>
                     {% if post.id is none %}{#
                     ################## create post ################
-                    #}<li><button type="submit" formmethod="POST" formaction="{{ url_for('post.create_post') }}">{{ localize('publish') }}</button></li>
+                    #}<li><button type="submit" formmethod="POST" formaction="{{ url_for('post.create_post') }}">{% block publish %}publish{% endblock publish %}</button></li>
                     {% else %}{#
                     ################## update post ################
-                    #}<li><button type="submit" formmethod="POST" formaction="{{ url_for('post.update_post', post_id=post.id) }}">{{ localize('update') }}</button></li>
+                    #}<li><button type="submit" formmethod="POST" formaction="{{ url_for('post.update_post', post_id=post.id) }}">{% block update %}update{% endblock update %}</button></li>
                     {% endif %}
                 </menu>
             </form>

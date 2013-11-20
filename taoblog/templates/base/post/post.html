@@ -4,7 +4,7 @@
 
 {% block main %}
             {% block preview %}
-            {% endblock %}
+            {% endblock preview %}
             <article class="post">
                 <header>
                     <h1><a href="{{ url_for('post.render_post_by_permalink', slug=post.slug, year=post.created_year, month=post.created_month) if post.slug else '#' }}">{{ post.title or 'Untitled' }}</a></h1>
@@ -14,13 +14,29 @@
                 </div>
                 {% if not overview and not draft -%}
                 <div class="meta">
-                    <p>{{ localize('posted on [date]', date=post.created_at.date())|safe }}</p>
+                    <p>Posted on <time datetime="{{ date }}" pubdate>{{ post.created_at.strftime("%B %d, %Y") }}</time></p>
+
                     {% if post.tags %}
-                    <p>{{ localize('tagged with [tags]', tags=post.tags)|safe }}</p>
+                    <p>Tagged with&nbsp;
+                    {%- for tag in post.tags -%}
+                        {%- if not loop.first -%}
+                            {%- if loop.last -%}
+                                &nbsp;and&nbsp;
+                            {%- else -%}
+                                ,&nbsp;
+                            {%- endif -%}
+                        {%- endif -%}
+                        <a href="{{ url_for('post.render_posts', tags=tag) }}">{{ tag|e }}</a>
+                    {%- endfor -%}
+                    </p>
                     {% endif %}
-                    {% if g.is_admin -%}
-                    {{ localize('edit or delete [post]', post=post)|safe }}
-                    {%- endif %}
+
+                    {% if g.is_admin %}
+                    <form>You can
+                    <button type="submit" class="text-link" formaction="{{ url_for('post.edit_post', post_id=post.id) }}">edit</button> or
+                    <button type="submit" class="text-link" formaction="{{ url_for('post.delete_post', post_id=post.id) }}" formmethod="POST" data-next="{{ url_for('.render_posts') }}">delete</button> it
+                    </form>
+                    {% endif %}
                 </div>
                 {%- endif %}
             </article>

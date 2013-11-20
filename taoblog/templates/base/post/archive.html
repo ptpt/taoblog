@@ -1,10 +1,10 @@
 {% extends "base/post/_layout.html" %}
 
-{% block title %}{{ localize('Archive') }}{% endblock %}
+{% block title %}Archive{% endblock title%}
 
 {% block nav %}
-                        <li class="focus"><a href="{{ url_for('post.archive') }}">{{ localize('Archive') }}</a></li>
-                        <li><a href="{{ url_for('post.render_posts') }}">{{ localize('Home') }}</a></li>
+                        <li class="focus"><a href="{{ url_for('post.archive') }}">Archive</a></li>
+                        <li><a href="{{ url_for('post.render_posts') }}">Home</a></li>
 {% endblock %}
 
 {% block main %}
@@ -24,7 +24,7 @@
             {%- endif %}
             <ul>
                 <li>
-                    <time datetime="{{ post['created_at'] }}" pubdate>{{ localize('[month_day]', date=post.created_at.date()) }}</time>
+                    <time datetime="{{ post['created_at'] }}" pubdate>{{ post.created_at.strftime("%b %d") }}</time>
                     <div class="tag">
                         {% for tag in post.tags %}
                         {% if tags and tag in tags -%}
@@ -43,10 +43,10 @@
         {% if not pagination.single %}
         <nav class="right-pagination">
             {% if pagination.prev_url -%}
-            <a class="previous" href="{{ pagination.prev_url }}">{{ localize('Previous Page') }}</a>
+            <a class="previous" href="{{ pagination.prev_url }}">« Previous</a>
             {%- endif -%}
             {%- if pagination.next_url -%}
-            <a class="next" href="{{ pagination.next_url }}">{{ localize('Next Page') }}</a>
+            <a class="next" href="{{ pagination.next_url }}">Next »</a>
             {%- endif %}
         </nav>
         {% endif %}
