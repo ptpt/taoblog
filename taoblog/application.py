@@ -16,7 +16,6 @@ POST_FEED_PERPAGE = 20
 # no one is admin by default
 ADMIN_EMAIL = None
 BLOG_TITLE = 'Taoblog'
-# I18N_FOLDER = None
 SECRET_KEY = os.urandom(24)
 LOCALE = 'en'
 

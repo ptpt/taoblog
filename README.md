@@ -122,16 +122,6 @@ ADMIN_EMAIL = ['jerry@email.com', 'tom@gmail.com']
 ```
 
 
-
---------------------------
-
-### `I18N_FOLDER`
-
-A path string to specify your custom locale files.
-
-
-
-
 --------------------------
 
 ### `GOOGLE_ANALYTICS_ID`
