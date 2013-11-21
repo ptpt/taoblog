@@ -1,4 +1,5 @@
 SRC = ./taoblog
+TESTS = ./tests
 STATIC = $(SRC)/static
 TEMPLATES = $(SRC)/templates
 
@@ -17,7 +18,7 @@ clean:
 
 wc:
 	wc `find $(SRC) -name "*.py"`
-	wc `find $(SRC)/tests -name "*.py"`
+	wc `find $(TESTS) -name "*.py"`
 	wc `find $(STATIC)/coffee -name "*.coffee"`
 	wc `find $(STATIC)/sass -name "*.scss"`
 	wc `find $(TEMPLATES) -name "*.html"`
