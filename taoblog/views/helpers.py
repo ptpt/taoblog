@@ -122,6 +122,33 @@ def admin_required(f):
     return decorated_function
 
 
+def require_sid():
+    if 'sid' not in request.values:
+        abort(403)
+    if 'sid' not in session:
+        abort(403)
+    if session['sid'] != request.values['sid']:
+        abort(403)
+
+
+def login_required_and_sid_matched(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        require_login()
+        require_sid()
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required_and_sid_matched(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        require_admin()
+        require_sid()
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def get_next_url():
     next_url = request.values.get('next') or \
         request.referrer or \
