@@ -315,7 +315,7 @@ def prepare():
     try:
         # created date and updated date are required
         fake_post = Post(title=title, text=text,
-                         slug=slug, author_id=session['sid'])
+                         slug=slug, author_id=session['uid'])
         fake_post.created_at = datetime.utcnow()
         fake_post.updated_at = datetime.utcnow()
     except ModelError as err:
