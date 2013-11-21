@@ -131,7 +131,7 @@ def require_sid():
         abort(403)
 
 
-def login_required_and_sid_matched(f):
+def login_and_sid_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         require_login()
@@ -140,7 +140,7 @@ def login_required_and_sid_matched(f):
     return decorated_function
 
 
-def admin_required_and_sid_matched(f):
+def admin_and_sid_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         require_admin()

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from flask import (Blueprint, request, g, abort,
-                   session, redirect,
-                   current_app, render_template, flash)
+from flask import (Blueprint, g,
+                   session, redirect, flash)
 
-from ..models import Session, ModelError
-from ..models.user import User, UserOperator
-from .helpers import (check_consistency, save_account_to_session,
+from ..models import Session
+from ..models.user import UserOperator
+from .helpers import (check_consistency,
+                      login_and_sid_required,
                       render_template, get_next_url)
 
 
@@ -27,10 +27,10 @@ def render_login():
 
 
 @session_bp.route('/logout', methods=['GET', 'POST'])
+@login_and_sid_required
 def logout():
-    if g.is_login and request.values.get('sid') == session.get('sid'):
-        session.clear()
-        flash('You\'ve been logout', category='success')
+    session.clear()
+    flash('You\'ve been logout', category='success')
     session.pop('token', None)
     session.pop('provider', None)
     return redirect(get_next_url())

@@ -8,7 +8,7 @@ from ..models import Session, ModelError
 from ..models.user import User, UserOperator
 from .helpers import (save_account_to_session,
                       check_consistency, get_next_url,
-                      render_template)
+                      render_template, login_and_sid_required)
 from .oauth import choose_provider, BaseOAuthError
 
 
@@ -32,26 +32,21 @@ def profile():
 
 
 @account_bp.route('/delete', methods=['POST'])
+@login_and_sid_required
 def delete_user():
-    if not g.is_login:
-        # todo: clear session fields
-        abort(403)
-    if request.values.get('sid') == session.get('sid'):
-        user = user_op.get_user(session['uid'])
-        user_op.delete_user(user)
-        session.clear()
-        flash('You\'ve been logout', category='success')
-        flash('Your account has been deleted', category='success')
+    user = user_op.get_user(session['uid'])
+    user_op.delete_user(user)
+    session.clear()
+    flash('You\'ve been logout', category='success')
+    flash('Your account has been deleted', category='success')
     session.pop('token', None)
     session.pop('provider', None)
     return redirect(get_next_url())
 
 
 @account_bp.route('/update', methods=['POST'])
+@login_and_sid_required
 def update_user():
-    if not g.is_login:
-        # todo: clear session fields
-        abort(403)
     kwargs = {}
     name = request.form.get('name')
     if name:
