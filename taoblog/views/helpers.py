@@ -124,7 +124,7 @@ def admin_required(f):
     return decorated_function
 
 
-def require_sid():
+def require_sid_matching():
     if 'sid' not in request.values:
         abort(403)
     if 'sid' not in session:
@@ -133,20 +133,20 @@ def require_sid():
         abort(403)
 
 
-def login_and_sid_required(f):
+def login_and_sid_matching_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         require_login()
-        require_sid()
+        require_sid_matching()
         return f(*args, **kwargs)
     return decorated_function
 
 
-def admin_and_sid_required(f):
+def admin_and_sid_matching_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         require_admin()
-        require_sid()
+        require_sid_matching()
         return f(*args, **kwargs)
     return decorated_function
 

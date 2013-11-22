@@ -6,7 +6,7 @@ from flask import (Blueprint, g,
 from ..models import Session
 from ..models.user import UserOperator
 from .helpers import (check_consistency,
-                      login_and_sid_required,
+                      login_and_sid_matching_required,
                       render_template, get_next_url)
 
 
@@ -27,7 +27,7 @@ def render_login():
 
 
 @session_bp.route('/logout', methods=['GET', 'POST'])
-@login_and_sid_required
+@login_and_sid_matching_required
 def logout():
     session.clear()
     flash('You\'ve been logout', category='success')

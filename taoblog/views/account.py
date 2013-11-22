@@ -8,7 +8,7 @@ from ..models import Session, ModelError
 from ..models.user import User, UserOperator
 from .helpers import (save_account_to_session,
                       check_consistency, get_next_url,
-                      render_template, login_and_sid_required)
+                      render_template, login_and_sid_matching_required)
 from .oauth import choose_provider, BaseOAuthError
 
 
@@ -32,7 +32,7 @@ def profile():
 
 
 @account_bp.route('/delete', methods=['POST'])
-@login_and_sid_required
+@login_and_sid_matching_required
 def delete_user():
     user = user_op.get_user(session['uid'])
     user_op.delete_user(user)
@@ -45,7 +45,7 @@ def delete_user():
 
 
 @account_bp.route('/update', methods=['POST'])
-@login_and_sid_required
+@login_and_sid_matching_required
 def update_user():
     kwargs = {}
     name = request.form.get('name')

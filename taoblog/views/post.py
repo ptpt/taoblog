@@ -9,7 +9,7 @@ from ..models import Session, ModelError
 from ..models.post import Post, Draft, PostOperator
 from ..models.user import UserOperator
 from .helpers import (require_int, JumpDirectly,
-                      admin_and_sid_required,
+                      admin_and_sid_matching_required,
                       render_template)
 
 
@@ -135,7 +135,7 @@ def render_post(post_id):
 
 
 @post_bp.route('/post/<int:post_id>/edit')
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def edit_post(post_id):
     post = post_op.get_post(post_id)
     if post is None:
@@ -144,7 +144,7 @@ def edit_post(post_id):
 
 
 @post_bp.route('/', methods=['POST'])
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def create_post():              # todo: rename
     """
     Create a post from a draft.
@@ -180,7 +180,7 @@ def create_post():              # todo: rename
 
 
 @post_bp.route('/post/<int:post_id>', methods=['POST'])
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def update_post(post_id):
     """
     Update the post from draft.
@@ -222,7 +222,7 @@ def update_post(post_id):
 
 
 @post_bp.route('/post/<int:post_id>/delete', methods=['POST'])
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def delete_post(post_id):
     post = post_op.get_post(post_id)
     if post is None:
@@ -246,7 +246,7 @@ def try_slugify(title, start=0, delim=u'-'):
 
 
 @post_bp.route('/prepare', methods=['POST', 'GET'])
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def prepare():
     """
     Create or update a draft, and a fake post for previewing.
@@ -330,7 +330,7 @@ def prepare():
 
 
 @post_bp.route('/draft/<int:draft_id>/edit')
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def edit_draft(draft_id):
     draft = post_op.get_draft(draft_id)
     if draft is None:
@@ -342,7 +342,7 @@ def edit_draft(draft_id):
 
 
 @post_bp.route('/drafts/', methods=['POST'])
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def create_draft():
     title = request.form.get('title')
     text = request.form.get('text')
@@ -362,7 +362,7 @@ def create_draft():
 
 
 @post_bp.route('/draft/<int:draft_id>', methods=['POST'])  # todo: use PUT
-@admin_and_sid_required
+@admin_and_sid_matching_required
 def update_draft(draft_id):
     draft = post_op.get_draft(draft_id)
     if draft is None:
