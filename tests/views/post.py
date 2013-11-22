@@ -32,38 +32,46 @@ class PostViewTestCase(TaoblogTestCase):
 
         # create draft
         rv = self.app.post('/prepare', data={'title': 'this is a title',
-                                             'text': 'this is a text'})
+                                             'text': 'this is a text',
+                                             'sid': 'sid'})
         self.assertEqual(rv.status_code, 200)
 
         # success: create post from draft
         rv = self.app.post('/', data={'draft-id': 1,
-                                      'slug': 'hello'})
+                                      'slug': 'hello',
+                                      'sid': 'sid'})
         self.assertEqual(rv.status_code, 302)
         self.assertTrue(rv.location.endswith('/hello'))
 
         # fail: draft with id 1 has been deleted
         rv = self.app.post('/', data={'draft-id': 1,
-                                      'slug': 'hello-2'})
+                                      'slug': 'hello-2',
+                                      'sid': 'sid'})
         self.assertEqual(rv.status_code, 404)
 
         # fail: duplicated slug
         rv = self.app.post('/prepare', data={'title': 'this is a title',
-                                             'text': 'this is a text'})
+                                             'text': 'this is a text',
+                                             'sid': 'sid'})
         rv = self.app.post('/', data={'draft-id': 1,
-                                      'slug': 'hello'})
+                                      'slug': 'hello',
+                                      'sid': 'sid'})
         # it should redirect to a page with error info
         self.assertEqual(rv.status_code, 302)
         self.assertEqual(rv.location, 'http://localhost/prepare')
 
         # fail: draft-id is invalid
         rv = self.app.post('/', data={'draft-id': 'invalid-number',
-                                      'slug': 'slug'})
+                                      'slug': 'slug',
+                                      'sid': 'sid'})
         self.assertEqual(rv.status_code, 400)
 
         # fail: slug is missing
-        rv = self.app.post('/', data={'draft-id': 2})
+        rv = self.app.post('/', data={'draft-id': 2,
+                                      'sid': 'sid'})
         self.assertEqual(rv.status_code, 400)
 
         # fail: draft-id is missing
-        rv = self.app.post('/', data={'slug': 'slug'})
+        rv = self.app.post('/', data={'slug': 'slug',
+                                      'sid': 'sid'})
         self.assertEqual(rv.status_code, 400)

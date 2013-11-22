@@ -42,12 +42,14 @@ def generate_sid():
     return ''.join([random.choice(choices) for _ in xrange(24)])
 
 
-def save_account_to_session(account):
+def save_account_to_session(account, sid=None):
     """ save the account information to the session. """
+    if sid is None:
+        sid = generate_sid()
     session['uid'] = account.id
     session['name'] = account.name
     session['email'] = account.email
-    session['sid'] = generate_sid()
+    session['sid'] = sid
     session.permanent = True
 
 
