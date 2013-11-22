@@ -61,8 +61,7 @@ def login_testing():
         account.id = 1
     except ModelError:
         abort(400)
-    save_account_to_session(account)
-    session['sid'] = request.form.get('sid')
+    save_account_to_session(account, sid=request.form.get('sid'))
     return redirect(get_next_url())
 
 
