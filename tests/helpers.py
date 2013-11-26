@@ -11,8 +11,9 @@ from taoblog.views.helpers import save_account_to_session, get_next_url
 
 
 bind_engine('sqlite:///:memory:', echo=False)
-app.config['ADMIN_EMAIL'] = ['author@taoblog.com',
-                             'admin@taoblog.com']
+app.config['ADMIN_EMAIL'] = ['author@email.com',
+                             'admin@email.com']
+app.debug = True
 
 
 class TaoblogTestCase(unittest.TestCase):
@@ -31,44 +32,50 @@ class TaoblogTestCase(unittest.TestCase):
         return self._app
 
     def login(self, **data):
-        data.setdefault('name', 'User')
-        data.setdefault('provider', 'openid')
-        data.setdefault('secret', 'a secret')
-        data.setdefault('email', 'user@taoblog.com')
+        data.setdefault('name', 'user')
+        data.setdefault('provider', 'user_provider')
+        data.setdefault('identity', 'user_identity')
+        data.setdefault('email', 'user@email.com')
         data.setdefault('sid', 'sid')
         return self.app.post('/login/testing', data=data)
 
     def login_as_admin(self):
-        return self.login(email=app.config['ADMIN_EMAIL'][0])
+        return self.login(email=app.config['ADMIN_EMAIL'][0],
+                          identity='admin_identity')
 
     def logout(self):
-        return self.app.post('/logout/testing',
-                             data={'sid': 'sid'})
+        return self.app.post('/logout/testing')
 
 
 def get_tests_root():
     return os.path.dirname(__file__)
 
 
+from taoblog.models.user import UserOperator
+user_op = UserOperator(Session())
+from flask import jsonify
+
+
 @app.route('/login/testing', methods=['POST'])
 def login_testing():
-    account = None
-    try:
-        account = User(name=request.form.get('name'),
-                       email=request.form.get('email'),
-                       provider=request.form.get('provider'),
-                       identity=request.form.get('identity'))
-        account.id = 1
-    except ModelError:
-        abort(400)
-    save_account_to_session(account, sid=request.form.get('sid'))
-    return redirect(get_next_url())
+    provider = request.form.get('provider')
+    identity = request.form.get('identity')
+    sid = request.form.get('sid')
+    user = user_op.get_user_by_identity(provider=provider,
+                                        identity=identity)
+    if user is not None:
+        save_account_to_session(user, sid=sid)
+        return jsonify(request.form)
+    user = User(name=request.form.get('name'),
+                email=request.form.get('email'),
+                provider=request.form.get('provider'),
+                identity=request.form.get('identity'))
+    user_op.create_user(user)
+    save_account_to_session(user, sid=sid)
+    return jsonify(request.form)
 
 
 @app.route('/logout/testing', methods=['GET', 'POST'])
 def logout_testing():
-    if g.is_login and request.values.get('sid') == session.get('sid'):
-        session.clear()
-    session.pop('token', None)
-    session.pop('provider', None)
-    return redirect(get_next_url())
+    session.clear()
+    return jsonify({'stat': 'ok'})
