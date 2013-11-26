@@ -15,7 +15,7 @@ class UserError(ModelError):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False, index=True)
     # todo: provider and token must be unique
     provider = Column(String, nullable=False)
@@ -74,9 +74,6 @@ class UserOperator(object):
     def create_user(self, user):
         if self.get_user_by_email(user.email):
             raise ModelError('user email exists')
-        if self.session.query(User).\
-                filter_by(name=user.name).first() is not None:
-            raise ModelError('user name exists')
         self.session.add(user)
         self.session.commit()
 

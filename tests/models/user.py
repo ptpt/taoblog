@@ -70,8 +70,10 @@ class TestUserOperator(TaoblogTestCase):
                     identity='a secret')
         op.create_user(user)
         self.assertEqual(op.get_user(user.id), user)
+        # same name is ok
         another_user = User(name='pt',
                             email='pt2@gmail.com',
                             provider='openid2',
                             identity='haha')
-        self.assertRaises(ModelError, op.create_user, another_user)
+        op.create_user(another_user)
+        self.assertEqual(op.get_user(another_user.id), another_user)
