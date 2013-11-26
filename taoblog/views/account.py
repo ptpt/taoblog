@@ -9,7 +9,7 @@ from ..models.user import User, UserOperator
 from .helpers import (save_account_to_session,
                       check_consistency, get_next_url,
                       render_template, login_and_sid_matching_required)
-from .oauth import choose_provider, BaseOAuthError
+from .oauth import providers, BaseOAuthError, BaseOAuth
 
 
 account_bp = Blueprint('account', __name__)
@@ -75,23 +75,29 @@ def update_user():
 def create_user():
     if not ('provider' in session and 'token' in session):
         abort(403)
-    next_url = get_next_url()
-    name = request.form.get('name')
-    email = request.form.get('email')
-    provider = session['provider']
-    token = session['token']
-    ProviderOAuth = choose_provider(provider)
+
+    provider = providers.get(session['provider'])
+    if not issubclass(provider, BaseOAuth):
+        # you got invalid provider name
+        session.pop('provider')
+        session.pop('token')
+        return redirect(url_for('session.render_login'))
+
+    # identity could be id, email address, username or whatever from the provider
+    # the combination of provider and identity must be unique
     try:
-        identity = ProviderOAuth(current_app).get_identity(token)
+        identity = provider(current_app).get_identity(session['token'])
     except BaseOAuthError as err:
+        # invalid token or other OAuth errors
         session.pop('provider')
         session.pop('token')
         flash(err.message, category='error')
         return redirect(url_for('session.render_login'))
 
+    next_url = get_next_url()
     try:
-        account = User(name=name,
-                       email=email,
+        account = User(name=request.form.get('name'),
+                       email=request.form.get('email'),
                        provider=provider,
                        identity=identity)
         user_op.create_user(account)
@@ -99,11 +105,12 @@ def create_user():
         flash(err.message, category='error')
         return redirect(url_for('account.profile',
                                 next=next_url,
-                                name=name,
-                                email=email))
-    else:
-        session.pop('provider', None)
-        session.pop('token', None)
-        save_account_to_session(account)
-        flash('New account created', category='success')
-        return redirect(next_url)
+                                name=request.form.get('name'),
+                                email=request.form.get('email')))
+
+    # success
+    session.pop('provider')
+    session.pop('token')
+    save_account_to_session(account)
+    flash('New account created', category='success')
+    return redirect(next_url)

@@ -1,10 +1,7 @@
-from .oauth import BaseOAuthError
+from .oauth import BaseOAuthError, BaseOAuth
 from .facebook import FacebookOAuth
 from .google import GoogleOAuth
 
 
-def choose_provider(name):
-    for provider in (FacebookOAuth, GoogleOAuth):
-        if name == provider.service_name:
-            return provider
-    raise RuntimeError('invalid provider')
+providers = dict((p.service_name, p)
+                 for p in (FacebookOAuth, GoogleOAuth))
