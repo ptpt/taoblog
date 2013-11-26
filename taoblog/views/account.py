@@ -37,7 +37,7 @@ def delete_user():
     user = user_op.get_user(session['uid'])
     user_op.delete_user(user)
     session.clear()
-    flash('You\'ve been logout', category='success')
+    flash('You have been logout', category='success')
     flash('Your account has been deleted', category='success')
     session.pop('token', None)
     session.pop('provider', None)

@@ -30,7 +30,5 @@ def render_login():
 @login_and_sid_matching_required
 def logout():
     session.clear()
-    flash('You\'ve been logout', category='success')
-    session.pop('token', None)
-    session.pop('provider', None)
+    flash('You have been logout', category='success')
     return redirect(get_next_url())
