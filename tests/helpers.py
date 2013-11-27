@@ -40,11 +40,15 @@ class TaoblogTestCase(unittest.TestCase):
         return self.app.post('/login/testing', data=data)
 
     def login_as_admin(self):
-        return self.login(email=app.config['ADMIN_EMAIL'][0],
-                          identity='admin_identity')
+        rv = self.login(email=app.config['ADMIN_EMAIL'][0],
+                        identity='admin_identity')
+        assert rv.status_code == 200
+        return rv
 
     def logout(self):
-        return self.app.post('/logout/testing')
+        rv = self.app.post('/logout/testing')
+        assert rv.status_code == 200
+        return rv
 
 
 def get_tests_root():
@@ -77,5 +81,6 @@ def login_testing():
 
 @app.route('/logout/testing', methods=['GET', 'POST'])
 def logout_testing():
+    jsonified_session = jsonify(session)
     session.clear()
-    return jsonify({'stat': 'ok'})
+    return jsonified_session
