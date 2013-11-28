@@ -11,6 +11,7 @@
  * Released under the MIT license.
  *
  */
+/*globals define, module */
 
 (function(global) {
 
@@ -144,7 +145,11 @@
             if (param[1] === null) {
                 s += param[0];
             } else {
-                s += param.join('=');
+                s += param[0];
+                s += '=';
+                if (param[1]) {
+                    s += encodeURIComponent(param[1]);
+                }
             }
         }
         return s.length > 0 ? '?' + s : s;
@@ -361,11 +366,15 @@
     };
 
     /**
-     * export via CommonJS, otherwise leak a global
+     * export via AMD or CommonJS, otherwise leak a global
      */
-    if (typeof module === 'undefined') {
-        global.Uri = Uri;
-    } else {
+    if (typeof define === 'function' && define.amd) {
+        define(function() {
+            return Uri;
+        });
+    } else if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
         module.exports = Uri;
+    } else {
+        global.Uri = Uri;
     }
 }(this));
