@@ -43,25 +43,28 @@ def atom_feed():
 
 @post_bp.route('/<int:year>/<int:month>/')
 @post_bp.route('/<int:year>/')
-@post_bp.route('/tagged/<string:tags>/<int:year>/<int:month>')
+@post_bp.route('/tagged/<string:tags>/<int:year>/<int:month>/')
 @post_bp.route('/tagged/<string:tags>/<int:year>/')
 @post_bp.route('/tagged/<string:tags>/')
 @post_bp.route('/')
 def render_posts(year=None, month=None, tags=None):
+    first_page = url_for('post.render_posts', year=year,
+                         month=month, tags=tags)
+    # if param page is invalid, then redirect to the first page
     page = require_int(
         request.args.get('page', 1),
-        JumpDirectly(redirect(url_for('post.render_posts',
-                                      year=year,
-                                      month=month,
-                                      tags=tags))))
+        JumpDirectly(redirect(first_page)))
     try:
         date_range = year and get_date_range(year, month)
     except (ValueError, TypeError):
         abort(400)
+    perpage = app.config['POST_PERPAGE']
+    offset = (page - 1) * perpage
+    tag_list = tags and tags.split('+')
     posts, more = post_op.get_public_posts(
-        offset=(page - 1) * app.config['POST_PERPAGE'],
-        limit=app.config['POST_PERPAGE'],
-        tags=tags and tags.split('+'),
+        offset=offset,
+        limit=perpage,
+        tags=tag_list,
         date=date_range)
 
     def _page_generator(page):
