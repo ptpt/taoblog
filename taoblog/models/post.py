@@ -3,7 +3,7 @@
 __all__ = ['Draft', 'Post', 'Tag', 'PostOperator']
 
 from datetime import datetime
-from sqlalchemy.schema import UniqueConstraint, Index
+from sqlalchemy.schema import Index
 from sqlalchemy.sql import and_
 from sqlalchemy import (Column, String, Integer, Table,
                         DateTime, func, ForeignKey, desc)
@@ -408,25 +408,31 @@ class PostOperator(object):
         if date:
             q = q.filter(and_(Post.created_at >= date[0],
                               Post.created_at < date[1]))
+        # sort posts by which column
         if sort is None:
             sort = 'created_at'
-        if isinstance(sort, basestring):
-            if not hasattr(Post, sort):
-                raise ModelError('invalid sort key')
-        else:
+        if (not isinstance(sort, basestring)) or (not hasattr(Post, sort)):
             raise ModelError('invalid sort key')
-        if not asc:
-            sort = desc(sort)
+        # Post id column is considered when sorting the created_at column,
+        # this is because when you create for example many posts at the
+        # same time (i.e. in one second), the posts with the same created
+        # time will not be listed in create time order, this is not what
+        # we expect. so post id column is taken into account to make it in order
+        columns_to_sort = [sort if asc else desc(sort)]
+        if sort == 'created_at':
+            columns_to_sort.append(Post.id if asc else desc(Post.id))
+        # filter posts that only in which statuses
         if isinstance(status, int):
             q = q.filter(Post.status == status)
         else:
             q = q.filter(Post.status.in_(status))
         if limit is None:
-            # limit set to None means get all
-            posts = q.order_by(sort).offset(offset).all()
+            # limit set to None means get all posts
+            posts = q.order_by(*columns_to_sort).offset(offset).all()
             more = False
         else:
-            posts = q.order_by(sort).offset(offset).limit(limit + 1).all()
+            # always fetch limit+1 posts to indicate if there are more posts left
+            posts = q.order_by(*columns_to_sort).offset(offset).limit(limit + 1).all()
             more = len(posts) > limit
             posts = posts[:limit]
         return posts, more
