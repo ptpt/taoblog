@@ -386,10 +386,7 @@ class PostOperator(object):
             year = now.year
         if month is None:
             month = now.month
-        try:
-            start, end = get_date_range(year, month)
-        except (ValueError, TypeError):
-            raise ModelError('invalid date')
+        start, end = get_date_range(year, month)
         return self.session.query(Post)\
             .filter(and_(Post.created_at >= start,
                          Post.created_at < end,

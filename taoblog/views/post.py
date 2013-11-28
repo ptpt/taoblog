@@ -115,8 +115,8 @@ def render_post_by_permalink(slug, year, month):
     post = None
     try:
         post = post_op.get_post_by_permalink(slug, year=year, month=month)
-    except ModelError:
-        # custom date might be invalid
+    except (ValueError, TypeError):
+        # invalid year or month
         abort(400)
     if post is None:
         abort(404)
