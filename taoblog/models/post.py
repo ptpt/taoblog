@@ -270,15 +270,19 @@ class Post(Base):
 
     def as_dict(self, meta=False):
         post_dict = {}
+        exclude = ('metadata', 'draft', 'content_id', 'text_id')
         for key in dir(self):
-            if key.islower() and \
-                    not key.startswith('_') and \
-                    key not in ['metadata', 'draft',
-                                'content_id', 'text_id'] and \
-                    not (meta and key in ['text', 'content']):
-                value = getattr(self, key)
-                if not hasattr(value, '__call__'):
-                    post_dict[key] = value
+            if key.isupper():
+                continue
+            if key.startswith('_'):
+                continue
+            if key in exclude:
+                continue
+            if meta and key in ('text', 'content'):
+                continue
+            value = getattr(self, key)
+            if not hasattr(value, '__call__'):
+                post_dict[key] = value
         return post_dict
 
 
