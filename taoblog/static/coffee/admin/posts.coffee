@@ -1,12 +1,11 @@
 deps = ['jquery',
-        'Uri',
         'moment',
         'admin/browser',
         'admin/toolbar',
         'admin/dom',
         'admin/utils']
 
-requirejs deps, ($, Uri, moment, Browser, Toolbar, dom, Utils) ->
+requirejs deps, ($, moment, Browser, Toolbar, dom, Utils) ->
     # constants
     PUBLIC = 0
     PRIVATE = 1
@@ -110,6 +109,26 @@ requirejs deps, ($, Uri, moment, Browser, Toolbar, dom, Utils) ->
                     trashItems.push(item)
             return [publicItems, privateItems, trashItems]
 
+    parseWindowQueryString = () ->
+        queryString = window.location.search.substring(1)
+        params = {}
+        for param in queryString.split('&')
+            kv = param.split('=')
+            key = kv[0]
+            val = if kv.length > 1 then kv[1] else null
+            params[key] = val
+        return params
+
+    makeQueryString = (params) ->
+        s = ''
+        for key, val of params
+            s = if s then s + '&' else '?'
+            s += key
+            if val?
+                s += '='
+                s += encodeURIComponent(val)
+        return s
+
     # this function will be exported
     setupPosts = ->
         toolbar          = new Toolbar '#toolbar'
@@ -120,15 +139,15 @@ requirejs deps, ($, Uri, moment, Browser, Toolbar, dom, Utils) ->
         getApiPath = (offset, limit, currentStatus) ->
             unless currentStatus?
                 currentStatus = $(browser.selector).data('status')
-            uri = new Uri window.location.href
+            params = parseWindowQueryString()
             if offset?
-                uri.addQueryParam 'offset', offset
+                params['offset'] = offset
             if limit?
-                uri.addQueryParam 'limit', limit
+                params['limit'] = limit
             if currentStatus?
-                uri.addQueryParam 'status', currentStatus
-            uri.addQueryParam 'meta', true
-            return "/api/posts/#{ uri.query() }"
+                params['status'] = currentStatus
+            params['meta'] = true
+            return "/api/posts/#{ makeQueryString(params) }"
 
         # delete all trashed posts from the server
         clearTrash = ->

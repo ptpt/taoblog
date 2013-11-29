@@ -4,10 +4,10 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  deps = ['jquery', 'Uri', 'moment', 'admin/browser', 'admin/toolbar', 'admin/dom', 'admin/utils'];
+  deps = ['jquery', 'moment', 'admin/browser', 'admin/toolbar', 'admin/dom', 'admin/utils'];
 
-  requirejs(deps, function($, Uri, moment, Browser, Toolbar, dom, Utils) {
-    var DRAFT_IMG_SRC, PRIVATE, PRIVATE_IMG_SRC, PUBLIC, PostBrowser, TRASH, setupPosts, _ref;
+  requirejs(deps, function($, moment, Browser, Toolbar, dom, Utils) {
+    var DRAFT_IMG_SRC, PRIVATE, PRIVATE_IMG_SRC, PUBLIC, PostBrowser, TRASH, makeQueryString, parseWindowQueryString, setupPosts, _ref;
     PUBLIC = 0;
     PRIVATE = 1;
     TRASH = 2;
@@ -179,27 +179,55 @@
       return PostBrowser;
 
     })(Browser);
+    parseWindowQueryString = function() {
+      var key, kv, param, params, queryString, val, _i, _len, _ref1;
+      queryString = window.location.search.substring(1);
+      params = {};
+      _ref1 = queryString.split('&');
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        param = _ref1[_i];
+        kv = param.split('=');
+        key = kv[0];
+        val = kv.length > 1 ? kv[1] : null;
+        params[key] = val;
+      }
+      return params;
+    };
+    makeQueryString = function(params) {
+      var key, s, val;
+      s = '';
+      for (key in params) {
+        val = params[key];
+        s = s ? s + '&' : '?';
+        s += key;
+        if (val != null) {
+          s += '=';
+          s += encodeURIComponent(val);
+        }
+      }
+      return s;
+    };
     setupPosts = function() {
       var browser, clearTrash, complementBrowser, deleteSelectedPosts, getApiPath, markSelectedPostsAs, showToolbar, toolbar;
       toolbar = new Toolbar('#toolbar');
       browser = new PostBrowser('TABLE.browser');
       getApiPath = function(offset, limit, currentStatus) {
-        var uri;
+        var params;
         if (currentStatus == null) {
           currentStatus = $(browser.selector).data('status');
         }
-        uri = new Uri(window.location.href);
+        params = parseWindowQueryString();
         if (offset != null) {
-          uri.addQueryParam('offset', offset);
+          params['offset'] = offset;
         }
         if (limit != null) {
-          uri.addQueryParam('limit', limit);
+          params['limit'] = limit;
         }
         if (currentStatus != null) {
-          uri.addQueryParam('status', currentStatus);
+          params['status'] = currentStatus;
         }
-        uri.addQueryParam('meta', true);
-        return "/api/posts/" + (uri.query());
+        params['meta'] = true;
+        return "/api/posts/" + (makeQueryString(params));
       };
       clearTrash = function() {
         return $.ajax({

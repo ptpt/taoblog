@@ -1,12 +1,11 @@
 deps = ['jquery',
         'moment',
-        'Uri',
         'admin/toolbar',
         'admin/browser',
         'admin/utils',
         'admin/dom']
 
-requirejs deps, ($, moment, Uri, Toolbar, Browser, Utils, dom) ->
+requirejs deps, ($, moment, Toolbar, Browser, Utils, dom) ->
     # browser showing drafts
     class DraftBrowser extends Browser
         # show human-readable at the date column

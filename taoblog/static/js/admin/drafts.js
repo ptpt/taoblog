@@ -4,9 +4,9 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  deps = ['jquery', 'moment', 'Uri', 'admin/toolbar', 'admin/browser', 'admin/utils', 'admin/dom'];
+  deps = ['jquery', 'moment', 'admin/toolbar', 'admin/browser', 'admin/utils', 'admin/dom'];
 
-  requirejs(deps, function($, moment, Uri, Toolbar, Browser, Utils, dom) {
+  requirejs(deps, function($, moment, Toolbar, Browser, Utils, dom) {
     var DraftBrowser, setupDrafts, _ref;
     DraftBrowser = (function(_super) {
       __extends(DraftBrowser, _super);

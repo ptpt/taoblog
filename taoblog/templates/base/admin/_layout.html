@@ -39,8 +39,7 @@
                 baseUrl: '{{ url_for('static', filename='js') }}',
                 paths: {
                     jquery: 'vendor/jquery/jquery',
-                    moment: 'vendor/moment/moment',
-                    Uri: 'vendor/jsuri/Uri'
+                    moment: 'vendor/moment/moment'
                 }
             };
             {% else %}
@@ -48,8 +47,7 @@
                 baseUrl: '{{ url_for('static', filename='js') }}',
                 paths: {
                     jquery: 'vendor/jquery/jquery.min',
-                    moment: 'vendor/moment/moment.min',
-                    Uri: 'vendor/jsuri/Uri.min'
+                    moment: 'vendor/moment/moment.min'
                 }
             }
             {% endif %}
