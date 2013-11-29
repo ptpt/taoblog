@@ -2,6 +2,7 @@
 
 {% block preview %}
             <form class="preview">
+                <input type="hidden" name="sid" value="{{ session['sid'] }}">
                 <input type="hidden" name="draft-id" value="{{ draft.id }}">
                 {% if post.id is not none -%}
                 <input type="hidden" name="post-id" value="{{ post.id }}">

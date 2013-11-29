@@ -28,6 +28,7 @@
 
 {% block main %}
                 <form id="compose-form">
+                    <input type="hidden" name="sid" value="{{ session['sid'] }}">
                     {% if post %}
                         {%- if post.draft -%}
                             {%- set title, text = post.draft.title, post.draft.text -%}
