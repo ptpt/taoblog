@@ -39,7 +39,7 @@ class TaoblogTestCase(unittest.TestCase):
         data.setdefault('sid', 'sid')
         rv = self.app.post('/login/testing', data=data)
         assert rv.status_code == 200
-        return rv
+        return json.loads(rv.data)
 
     def login_as_admin(self):
         return self.login(email=self.app.application.config['ADMIN_EMAIL'][0],
@@ -48,7 +48,7 @@ class TaoblogTestCase(unittest.TestCase):
     def logout(self):
         rv = self.app.post('/logout/testing')
         assert rv.status_code == 200
-        return rv
+        return json.loads(rv.data)
 
 
 def get_tests_root():
@@ -69,18 +69,19 @@ def login_testing():
                                         identity=identity)
     if user is not None:
         save_account_to_session(user, sid=sid)
-        return jsonify(request.form)
+        return jsonify(user.as_dict())
     user = User(name=request.form.get('name'),
                 email=request.form.get('email'),
                 provider=request.form.get('provider'),
                 identity=request.form.get('identity'))
     user_op.create_user(user)
     save_account_to_session(user, sid=sid)
-    return jsonify(request.form)
+    return jsonify(user.as_dict())
 
 
 @app.route('/logout/testing', methods=['GET', 'POST'])
 def logout_testing():
-    jsonified_session = jsonify(session)
+    user_id = session['uid']
     session.clear()
-    return jsonified_session
+    user = user_op.get_user(user_id)
+    return jsonify(user.as_dict())
