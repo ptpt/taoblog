@@ -2,7 +2,6 @@
 
 import os
 import re
-import imp
 import cgi
 from datetime import date
 
@@ -12,62 +11,6 @@ from pygments.formatters import HtmlFormatter
 
 # misaka is much faster
 import misaka
-
-
-def chinese_date(the_date):
-    return u'%s月%s号' % (
-        chinese_numeralize(the_date.month),
-        chinese_numeralize(the_date.day))
-
-
-def chinese_digitize(number):
-    cardinals = [u'零', u'一', u'二', u'三', u'四', u'五', u'六', u'七', u'八', u'九']
-    digits = [cardinals[int(x)] for x in str(abs(number))]
-    hanzi = ''.join(digits)
-    if number < 0:
-        hanzi = u'负' + hanzi
-    return hanzi
-
-
-def chinese_numeralize(number):
-    """ Translate number to chinese hanzi """
-    cardinals = [u'零', u'一', u'二', u'三', u'四', u'五', u'六', u'七', u'八', u'九']
-    digits = [cardinals[int(x)] for x in str(abs(number))]
-    units, uc = [u'', u'十', u'百', u'千'], 4
-    superunits, sc = [u'', u'万', u'亿'], 3
-    hanzi = ''
-    digits.reverse()
-    non_zero = False
-    for i, c in enumerate(digits):
-        if i % uc == 0:
-            if i > 0 and (i // uc) % (sc - 1) == 0:
-                hanzi = superunits[-1] + hanzi
-            superunit = superunits[(i // uc) % (sc - 1)]
-            non_zero = False
-        unit = units[i % uc] if non_zero else (units[i % uc] + superunit)
-        if c == cardinals[0]:
-            if non_zero and hanzi[0] != cardinals[0]:
-                hanzi = cardinals[0] + hanzi
-        else:
-            hanzi = c + unit + hanzi
-            non_zero = True
-    length = len(hanzi)
-    if not length:
-        hanzi = cardinals[0]
-    else:
-        # 二百 => 两百
-        hanzi = hanzi.replace(cardinals[2], u'两')
-        hanzi = hanzi.replace(u'两' + units[1], cardinals[2] + units[1])
-        hanzi = hanzi.replace(units[1] + u'两', units[1] + cardinals[2])
-        if hanzi[-1] == u'两' and len(hanzi) > 1:
-            hanzi = hanzi[:-1] + cardinals[2]
-        # 一十 => 十
-        if length > 1 and hanzi[0] == cardinals[1] and \
-                hanzi[1] == units[1]:
-            hanzi = hanzi[1:]
-    if number < 0:
-        hanzi = u'负' + hanzi
-    return hanzi
 
 
 def get_date_range(year, month=None):
@@ -120,20 +63,6 @@ def slugify(text, delim=u'-'):
         if word:
             result.append(word)
     return unicode(delim.join(result))
-
-
-def import_file(path):
-    basename = os.path.basename(path)
-    if basename.lower().endswith('.py'):
-        name = basename[:-3]
-    else:
-        name = basename
-    fp, path, desc = imp.find_module(name, [os.path.dirname(path)])
-    try:
-        return imp.load_module(name, fp, path, desc)
-    finally:
-        if fp:
-            fp.close()
 
 
 def normalize_path(path, *paths):
