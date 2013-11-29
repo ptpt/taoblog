@@ -122,11 +122,11 @@ requirejs deps, ($, Uri, moment, Browser, Toolbar, dom, Utils) ->
                 currentStatus = $(browser.selector).data('status')
             uri = new Uri window.location.href
             if offset?
-                uri.addQueryParam 'offset', encodeURIComponent(offset)
+                uri.addQueryParam 'offset', offset
             if limit?
-                uri.addQueryParam 'limit', encodeURIComponent(limit)
+                uri.addQueryParam 'limit', limit
             if currentStatus?
-                uri.addQueryParam 'status', encodeURIComponent(currentStatus)
+                uri.addQueryParam 'status', currentStatus
             uri.addQueryParam 'meta', true
             return "/api/posts/#{ uri.query() }"
 

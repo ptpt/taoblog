@@ -190,13 +190,13 @@
         }
         uri = new Uri(window.location.href);
         if (offset != null) {
-          uri.addQueryParam('offset', encodeURIComponent(offset));
+          uri.addQueryParam('offset', offset);
         }
         if (limit != null) {
-          uri.addQueryParam('limit', encodeURIComponent(limit));
+          uri.addQueryParam('limit', limit);
         }
         if (currentStatus != null) {
-          uri.addQueryParam('status', encodeURIComponent(currentStatus));
+          uri.addQueryParam('status', currentStatus);
         }
         uri.addQueryParam('meta', true);
         return "/api/posts/" + (uri.query());
