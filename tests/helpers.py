@@ -25,6 +25,11 @@ class TaoblogTestCase(unittest.TestCase):
         self.session.close()
         Base.metadata.drop_all()
 
+    def add_post(self, **data):
+        rv = self.app.post('/api/posts/', data=data)
+        assert rv.status_code == 200
+        return rv
+
     @property
     def app(self):
         if not hasattr(self, '_app') or self._app is None:
