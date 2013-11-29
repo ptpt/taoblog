@@ -1,2 +1,0 @@
-NAME = 'Taiwan'
-FALLBACK = 'cn'
