@@ -37,13 +37,13 @@ class TaoblogTestCase(unittest.TestCase):
         data.setdefault('identity', 'user_identity')
         data.setdefault('email', 'user@email.com')
         data.setdefault('sid', 'sid')
-        return self.app.post('/login/testing', data=data)
-
-    def login_as_admin(self):
-        rv = self.login(email=app.config['ADMIN_EMAIL'][0],
-                        identity='admin_identity')
+        rv = self.app.post('/login/testing', data=data)
         assert rv.status_code == 200
         return rv
+
+    def login_as_admin(self):
+        return self.login(email=self.app.application.config['ADMIN_EMAIL'][0],
+                          identity='admin_identity')
 
     def logout(self):
         rv = self.app.post('/logout/testing')
