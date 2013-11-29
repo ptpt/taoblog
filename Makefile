@@ -10,7 +10,7 @@ demo:
 	python run.py
 
 example:
-	TAOBLOG_CONFIG_PATH="`pwd`/example/config.cfg" python run.py
+	TAOBLOG_CONFIG_PATH="`pwd`/example.cfg" python run.py
 
 clean:
 	find . -name "*.pyc" -delete
