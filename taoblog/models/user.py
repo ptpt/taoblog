@@ -50,6 +50,13 @@ class User(Base):
             raise UserError('invalid email')
         return email
 
+    def as_dict(self):
+        return {'id': self.id,
+                'name': self.name,
+                'email': self.email,
+                'provider': self.provider,
+                'identity': self.identity}
+
 
 class UserOperator(object):
     def __init__(self, session):
