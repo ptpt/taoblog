@@ -10,7 +10,7 @@ from ..models.post import Post, Draft, PostOperator
 from ..models.user import UserOperator
 from .helpers import (require_int, JumpDirectly,
                       admin_and_sid_matching_required,
-                      render_template)
+                      admin_required, render_template)
 
 
 post_bp = Blueprint('post', __name__)
@@ -138,7 +138,7 @@ def render_post(post_id):
 
 
 @post_bp.route('/post/<int:post_id>/edit')
-@admin_and_sid_matching_required
+@admin_required
 def edit_post(post_id):
     post = post_op.get_post(post_id)
     if post is None:
@@ -333,7 +333,7 @@ def prepare():
 
 
 @post_bp.route('/draft/<int:draft_id>/edit')
-@admin_and_sid_matching_required
+@admin_required
 def edit_draft(draft_id):
     draft = post_op.get_draft(draft_id)
     if draft is None:
