@@ -48,12 +48,11 @@ def atom_feed():
 @post_bp.route('/tagged/<string:tags>/')
 @post_bp.route('/')
 def render_posts(year=None, month=None, tags=None):
-    first_page = url_for('post.render_posts', year=year,
-                         month=month, tags=tags)
+    first_page = url_for('post.render_posts',
+                         year=year, month=month, tags=tags)
     # if param page is invalid, then redirect to the first page
-    page = require_int(
-        request.args.get('page', 1),
-        JumpDirectly(redirect(first_page)))
+    page = require_int(request.args.get('page', 1),
+                       JumpDirectly(redirect(first_page)))
     try:
         date_range = year and get_date_range(year, month)
     except (ValueError, TypeError):
@@ -73,8 +72,9 @@ def render_posts(year=None, month=None, tags=None):
                        month=month, tags=tags)
 
     pagination = Pagination(page, more, _page_generator)
-    return render_template('post/posts.html', posts=posts,
-                           tags=tags and tags.split('+'),
+    return render_template('post/posts.html',
+                           posts=posts,
+                           tags=tag_list,
                            pagination=pagination)
 
 
@@ -85,21 +85,22 @@ def render_posts(year=None, month=None, tags=None):
 @post_bp.route('/archive/tagged/<string:tags>/')
 @post_bp.route('/archive/')
 def archive(year=None, month=None, tags=None):
-    page = require_int(
-        request.args.get('page', 1),
-        JumpDirectly(redirect(url_for('.render_posts',
-                                      year=year,
-                                      month=month,
-                                      tags=tags))))
-    date_range = None
+    first_page = url_for('post.archive', year=year, month=month, tags=tags)
+    page = require_int(request.args.get('page', 1),
+                       JumpDirectly(redirect(first_page)))
     try:
         date_range = year and get_date_range(year, month)
     except (ValueError, TypeError):
         abort(400)
+    perpage = app.config['POST_PERPAGE']
+    offset = (page - 1) * perpage
+    limit = perpage
+    tag_list = tags and tags.split('+')
     posts, more = post_op.get_public_posts(
-        offset=(page - 1) * app.config['POST_PERPAGE'],
-        limit=app.config['POST_PERPAGE'],
-        tags=tags and tags.split('+'), date=date_range)
+        offset=offset,
+        limit=limit,
+        tags=tag_list,
+        date=date_range)
 
     def _page_generator(page):
         return url_for('post.archive',
@@ -107,15 +108,15 @@ def archive(year=None, month=None, tags=None):
                        month=month, tags=tags)
 
     pagination = Pagination(page, more, _page_generator)
-    return render_template('post/archive.html', posts=posts,
-                           tags=tags and tags.split('+'),
+    return render_template('post/archive.html',
+                           posts=posts,
+                           tags=tag_list,
                            tagcloud=post_op.get_public_tags(),
                            pagination=pagination)
 
 
 @post_bp.route('/<int:year>/<int:month>/<string:slug>')
 def render_post_by_permalink(slug, year, month):
-    post = None
     try:
         post = post_op.get_post_by_permalink(slug, year=year, month=month)
     except (ValueError, TypeError):
@@ -148,7 +149,7 @@ def edit_post(post_id):
 
 @post_bp.route('/', methods=['POST'])
 @admin_and_sid_matching_required
-def create_post():              # todo: rename
+def create_post():
     """
     Create a post from a draft.
 
@@ -156,7 +157,9 @@ def create_post():              # todo: rename
     * required post data: slug, draft-id
     * optional post data: tags
     """
-    slug = request.form.get('slug') or abort(400)
+    slug = request.form.get('slug')
+    if not slug:
+        abort(400)
     tags = request.form.get('tags', '').split()
     draft_id = require_int(request.form.get('draft-id'), 400)
     draft = post_op.get_draft(draft_id)
