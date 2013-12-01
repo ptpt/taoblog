@@ -1,13 +1,12 @@
 import os
+import json
 import unittest
-from flask import (abort, session,
-                   redirect, request, g)
+from flask import (session, request)
 
 from taoblog import application as app
-from taoblog.models import (ModelError, Base,
-                            Session, bind_engine)
+from taoblog.models import (Base, Session, bind_engine)
 from taoblog.models.user import User
-from taoblog.views.helpers import save_account_to_session, get_next_url
+from taoblog.views.helpers import save_account_to_session
 
 
 bind_engine('sqlite:///:memory:', echo=False)
