@@ -65,7 +65,7 @@ class Post(Base):
     updated_at = Column('updated_at', DateTime,
                         onupdate=func.now())
     version = Column(Integer, default=0)
-    author_id = Column(Integer, ForeignKey('user.id'))
+    author_id = Column(Integer, ForeignKey('user.id'), nullable=False)
 
     ################ text ################
     text_id = Column(Integer, ForeignKey('post_text.id'))
