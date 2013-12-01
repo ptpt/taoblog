@@ -33,8 +33,9 @@
 
                     {% if g.is_admin %}
                     <form>You can
+                    <input type="hidden" name="sid" value="{{ session['sid'] }}">
                     <button type="submit" class="text-link" formaction="{{ url_for('post.edit_post', post_id=post.id) }}">edit</button> or
-                    <button type="submit" class="text-link" formaction="{{ url_for('post.delete_post', post_id=post.id) }}" formmethod="POST" data-next="{{ url_for('.render_posts') }}">delete</button> it
+                    <button type="submit" class="text-link" formaction="{{ url_for('post.trash_post', post_id=post.id) }}" formmethod="POST" data-next="{{ url_for('.render_posts') }}">trash</button> it
                     </form>
                     {% endif %}
                 </div>

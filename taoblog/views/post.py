@@ -237,6 +237,16 @@ def delete_post(post_id):
     return redirect(url_for('post.render_posts'))
 
 
+@post_bp.route('/post/<int:post_id>/trash', methods=['POST'])
+@admin_and_sid_matching_required
+def trash_post(post_id):
+    post = post_op.get_post(post_id)
+    if post is None:
+        abort(404)
+    post_op.trash_post(post)
+    return redirect(url_for('post.render_posts'))
+
+
 def try_slugify(title, start=0, delim=u'-'):
     """ get a unique slug """
     suffix = start
