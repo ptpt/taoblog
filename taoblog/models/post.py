@@ -477,21 +477,22 @@ class PostOperator(object):
         self.session.commit()
         return post
 
-    def delete_post(self, post):
+    def delete_post(self, post, nocommit=False):
         post.clear_tags(nocommit=True)  # don't commit
         self.session.delete(post)
-        self.session.commit()
+        if not nocommit:
+            self.session.commit()
         return post
 
     def delete_posts(self, posts):
         for post in posts:
             post.clear_tags(nocommit=True)
-            self.session.delete(post)
+            self.session.delete(post, nocommit=True)
         self.session.commit()
         return posts
 
-    def get_draft(self, id):
-        return self.session.query(Draft).get(id)
+    def get_draft(self, draft_id):
+        return self.session.query(Draft).get(draft_id)
 
     def get_post_draft(self, post):
         return self.session.query(Post)\
