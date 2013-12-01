@@ -9,8 +9,8 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
-# misaka is much faster
-import misaka
+# hoedown is much faster
+import hoedown
 
 
 def get_date_range(year, month=None):
@@ -28,7 +28,7 @@ def get_date_range(year, month=None):
     return start, end
 
 
-class BleepRenderer(misaka.HtmlRenderer, misaka.SmartyPants):
+class BleepRenderer(hoedown.HtmlRenderer, hoedown.SmartyPants):
     def block_code(self, text, lang):
         if not lang:
             return '\n<pre><code>%s</code></pre>\n' % \
@@ -38,8 +38,8 @@ class BleepRenderer(misaka.HtmlRenderer, misaka.SmartyPants):
         return highlight(text, lexer, formatter)
 
 
-md_renderer = misaka.Markdown(BleepRenderer(),
-                              extensions=misaka.EXT_FENCED_CODE | misaka.EXT_NO_INTRA_EMPHASIS)
+md_renderer = hoedown.Markdown(BleepRenderer(),
+                               extensions=hoedown.EXT_FENCED_CODE | hoedown.EXT_NO_INTRA_EMPHASIS)
 
 
 def markdown(text):
