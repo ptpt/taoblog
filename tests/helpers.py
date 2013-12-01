@@ -25,15 +25,15 @@ class TaoblogTestCase(unittest.TestCase):
         Base.metadata.drop_all()
 
     def add_post(self, **data):
-        rv = self.app.post('/api/posts/', data=data)
+        rv = self.client.post('/api/posts/', data=data)
         assert rv.status_code == 200
         return rv
 
     @property
-    def app(self):
-        if not hasattr(self, '_app') or self._app is None:
-            self._app = app.test_client()
-        return self._app
+    def client(self):
+        if not hasattr(self, '_client') or self._client is None:
+            self._client = app.test_client()
+        return self._client
 
     def login(self, **data):
         data.setdefault('name', 'user')
@@ -41,16 +41,16 @@ class TaoblogTestCase(unittest.TestCase):
         data.setdefault('identity', 'user_identity')
         data.setdefault('email', 'user@email.com')
         data.setdefault('sid', 'sid')
-        rv = self.app.post('/login/testing', data=data)
+        rv = self.client.post('/login/testing', data=data)
         assert rv.status_code == 200
         return json.loads(rv.data)
 
     def login_as_admin(self):
-        return self.login(email=self.app.application.config['ADMIN_EMAIL'][0],
+        return self.login(email=self.client.application.config['ADMIN_EMAIL'][0],
                           identity='admin_identity')
 
     def logout(self):
-        rv = self.app.post('/logout/testing')
+        rv = self.client.post('/logout/testing')
         assert rv.status_code == 200
         return json.loads(rv.data)
 

@@ -16,9 +16,9 @@ class PostViewTestCase(TaoblogTestCase):
         self.db_teardown()
 
     def test_feed(self):
-        rv = self.app.get('/feed/')
+        rv = self.client.get('/feed/')
         self.assertEqual(rv.status_code, 200)
-        perpage = self.app.application.config['POST_FEED_PERPAGE']
+        perpage = self.client.application.config['POST_FEED_PERPAGE']
         title = '<h1>This</h1> is Title {0}'
         text = '<span>this</span> is text {0}'
         slug = 'this-is-slug-{0}'
@@ -29,7 +29,7 @@ class PostViewTestCase(TaoblogTestCase):
                           slug=slug.format(n))
         user = self.logout()
         author_name = user['name']
-        rv = self.app.get('/feed/')
+        rv = self.client.get('/feed/')
         self.assertEqual(rv.status_code, 200)
         # make sure it renders the first POST_FEED_PERPAGE posts only
         for n in range(perpage + 3, 0, -1):
@@ -46,15 +46,15 @@ class PostViewTestCase(TaoblogTestCase):
     def test_render_posts_and_archive(self):
 
         def assert_get(path):
-            posts_resp = self.app.get(path)
+            posts_resp = self.client.get(path)
             self.assertEqual(posts_resp.status_code, 200)
-            archive_resp = self.app.get('/archive' + path)
+            archive_resp = self.client.get('/archive' + path)
             self.assertEqual(archive_resp.status_code, 200)
             return posts_resp, archive_resp
 
         assert_get('/')
 
-        perpage = self.app.application.config['POST_PERPAGE']
+        perpage = self.client.application.config['POST_PERPAGE']
         title = '<h1>This</h1> is Title {0}'
         text = '<span>this</span> is text {0}'
         slug = 'this-is-slug-{0}'
@@ -130,26 +130,26 @@ class PostViewTestCase(TaoblogTestCase):
         self.add_post(title=title, text=text, slug=slug)
         self.logout()
         today = date.today()
-        rv = self.app.get('/{year}/{month}/{slug}'.format(year=today.year,
-                                                          month=today.month,
-                                                          slug=slug))
+        rv = self.client.get('/{year}/{month}/{slug}'.format(year=today.year,
+                                                             month=today.month,
+                                                             slug=slug))
         self.assertEqual(rv.status_code, 200)
         self.assertIn(title, rv.data)
         self.assertIn(text, rv.data)
         self.assertIn(slug, rv.data)
         # not found
-        rv = self.app.get('/1989/06/{slug}'.format(slug=slug))
+        rv = self.client.get('/1989/06/{slug}'.format(slug=slug))
         self.assertEqual(rv.status_code, 404)
-        rv = self.app.get('/{year}/{month}/invalid-slug')
+        rv = self.client.get('/{year}/{month}/invalid-slug')
         self.assertEqual(rv.status_code, 404)
-        rv = self.app.get('/2012/abcd/{slug}'.format(slug=slug))
+        rv = self.client.get('/2012/abcd/{slug}'.format(slug=slug))
         self.assertEqual(rv.status_code, 404)
         # request syntax error
-        rv = self.app.get('/12/40/{slug}'.format(slug=slug))
+        rv = self.client.get('/12/40/{slug}'.format(slug=slug))
         self.assertEqual(rv.status_code, 400)
 
     def test_render_post(self):
-        rv = self.app.get('/post/1')
+        rv = self.client.get('/post/1')
         self.assertEqual(rv.status_code, 404)
         title = 'This is Title'
         text = 'This is text'
@@ -159,20 +159,20 @@ class PostViewTestCase(TaoblogTestCase):
         self.logout()
         post_id = json.loads(rv.data)['response']['posts'][0]['id']
         path = '/post/{id}'.format(id=post_id)
-        rv = self.app.get(path)
+        rv = self.client.get(path)
         self.assertEqual(rv.status_code, 302)
-        rv = self.app.get(path, follow_redirects=True)
+        rv = self.client.get(path, follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
         self.assertIn(title, rv.data)
         self.assertIn(text, rv.data)
         self.assertIn(slug, rv.data)
 
     def test_render_post_editing(self):
-        rv = self.app.get('/post/1/edit')
+        rv = self.client.get('/post/1/edit')
         # admin required
         self.assertEqual(rv.status_code, 302)
         self.login_as_admin()
-        rv = self.app.get('/post/1/edit')
+        rv = self.client.get('/post/1/edit')
         self.assertEqual(rv.status_code, 404)
         title = 'This is Title'
         text = 'This is text'
@@ -180,65 +180,65 @@ class PostViewTestCase(TaoblogTestCase):
         rv = self.add_post(title=title, text=text, slug=slug)
         post_id = json.loads(rv.data)['response']['posts'][0]['id']
         path = '/post/{id}/edit'.format(id=post_id)
-        rv = self.app.get(path)
+        rv = self.client.get(path)
         self.assertEqual(rv.status_code, 200)
         self.assertIn(title, rv.data)
         self.assertIn(text, rv.data)
 
     def test_compose(self):
         # redirect to login
-        rv = self.app.get('/admin/compose')
+        rv = self.client.get('/admin/compose')
         self.assertEqual(rv.status_code, 302)
-        rv = self.app.get('/admin/compose', follow_redirects=True)
+        rv = self.client.get('/admin/compose', follow_redirects=True)
         self.assertEqual(rv.status_code, 200)
 
         # success: login
         self.login_as_admin()
-        rv = self.app.get('/admin/')
+        rv = self.client.get('/admin/')
         self.assertEqual(rv.status_code, 200)
 
         # create draft
-        rv = self.app.post('/prepare', data={'title': 'this is a title',
-                                             'text': 'this is a text',
-                                             'sid': 'sid'})
+        rv = self.client.post('/prepare', data={'title': 'this is a title',
+                                                'text': 'this is a text',
+                                                'sid': 'sid'})
         self.assertEqual(rv.status_code, 200)
 
         # success: create post from draft
-        rv = self.app.post('/', data={'draft-id': 1,
-                                      'slug': 'hello',
-                                      'sid': 'sid'})
+        rv = self.client.post('/', data={'draft-id': 1,
+                                         'slug': 'hello',
+                                         'sid': 'sid'})
         self.assertEqual(rv.status_code, 302)
         self.assertTrue(rv.location.endswith('/hello'))
 
         # fail: draft with id 1 has been deleted
-        rv = self.app.post('/', data={'draft-id': 1,
-                                      'slug': 'hello-2',
-                                      'sid': 'sid'})
+        rv = self.client.post('/', data={'draft-id': 1,
+                                         'slug': 'hello-2',
+                                         'sid': 'sid'})
         self.assertEqual(rv.status_code, 404)
 
         # fail: duplicated slug
-        rv = self.app.post('/prepare', data={'title': 'this is a title',
-                                             'text': 'this is a text',
-                                             'sid': 'sid'})
-        rv = self.app.post('/', data={'draft-id': 1,
-                                      'slug': 'hello',
-                                      'sid': 'sid'})
+        rv = self.client.post('/prepare', data={'title': 'this is a title',
+                                                'text': 'this is a text',
+                                                'sid': 'sid'})
+        rv = self.client.post('/', data={'draft-id': 1,
+                                         'slug': 'hello',
+                                         'sid': 'sid'})
         # it should redirect to a page with error info
         self.assertEqual(rv.status_code, 302)
         self.assertEqual(rv.location, 'http://localhost/prepare')
 
         # fail: draft-id is invalid
-        rv = self.app.post('/', data={'draft-id': 'invalid-number',
-                                      'slug': 'slug',
-                                      'sid': 'sid'})
+        rv = self.client.post('/', data={'draft-id': 'invalid-number',
+                                         'slug': 'slug',
+                                         'sid': 'sid'})
         self.assertEqual(rv.status_code, 400)
 
         # fail: slug is missing
-        rv = self.app.post('/', data={'draft-id': 2,
-                                      'sid': 'sid'})
+        rv = self.client.post('/', data={'draft-id': 2,
+                                         'sid': 'sid'})
         self.assertEqual(rv.status_code, 400)
 
         # fail: draft-id is missing
-        rv = self.app.post('/', data={'slug': 'slug',
-                                      'sid': 'sid'})
+        rv = self.client.post('/', data={'slug': 'slug',
+                                         'sid': 'sid'})
         self.assertEqual(rv.status_code, 400)
