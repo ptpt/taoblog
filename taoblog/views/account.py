@@ -76,7 +76,8 @@ def create_user():
     if not ('provider' in session and 'token' in session):
         abort(403)
 
-    provider = providers.get(session['provider'])
+    provider_name = session['provider']
+    provider = providers.get(provider_name)
     if not issubclass(provider, BaseOAuth):
         # you got invalid provider name
         session.pop('provider')
@@ -98,7 +99,7 @@ def create_user():
     try:
         account = User(name=request.form.get('name'),
                        email=request.form.get('email'),
-                       provider=provider,
+                       provider=provider_name,
                        identity=identity)
         user_op.create_user(account)
     except ModelError as err:
