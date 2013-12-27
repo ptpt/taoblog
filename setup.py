@@ -9,17 +9,20 @@ except ImportError:
     from distutils.core import setup
 
 
-requires = []
-for line in open('requirements.txt'):
-    package = line.strip()
-    if package:
-        requires.append(package)
+def read_requirements():
+    filename = 'requirements.txt'
+    if os.path.isfile(filename):
+        packages = [line.strip() for line in open(filename)
+                    if line.strip()]
+    else:
+        packages = []
+    return packages
 
 
 def readme():
-    for file in ['README.md', 'README.rst']:
-        if os.path.exists(file):
-            with open('README.md') as f:
+    for filename in ['README.md', 'README.rst']:
+        if os.path.isfile(filename):
+            with open(filename) as f:
                 return f.read()
     return None
 
@@ -37,6 +40,6 @@ setup(name='taoblog',
       keywords='web,blog',
       license='MIT',
       packages=['taoblog'],
-      install_requires=requires,
       include_package_data=True,
+      install_requires=read_requirements(),
       zip_safe=False)
