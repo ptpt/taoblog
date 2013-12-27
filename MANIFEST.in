@@ -1,4 +1,3 @@
 include README.md LICENSE run.py example.cfg
 recursive-include taoblog *
 recursive-include tests *
-recursive-include example *
