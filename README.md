@@ -9,7 +9,7 @@ Dependencies
 
 1. Flask
 2. SQLAlchemy
-3. misaka (super fast markdown parser)
+3. hoedown (super fast markdown parser)
 4. rauth (OAuth support)
 5. pygments (highlight your code)
 
