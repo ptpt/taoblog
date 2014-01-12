@@ -43,11 +43,11 @@ def get_status_code(status_string):
     return status_code[0] if len(status_code) == 1 else status_code
 
 
-@admin_bp.route('/posts/<string:status>/tagged/<string:tags>')
-@admin_bp.route('/posts/<string:status>/tagged/<string:tags>/<int:year>/<int:month>')
-@admin_bp.route('/posts/<string:status>/tagged/<string:tags>/<int:year>')
-@admin_bp.route('/posts/<string:status>/<int:year>')
-@admin_bp.route('/posts/<string:status>/<int:year>/<int:month>')
+@admin_bp.route('/posts/<string:status>/tagged/<string:tags>/')
+@admin_bp.route('/posts/<string:status>/tagged/<string:tags>/<int:year>/<int:month>/')
+@admin_bp.route('/posts/<string:status>/tagged/<string:tags>/<int:year>/')
+@admin_bp.route('/posts/<string:status>/<int:year>/')
+@admin_bp.route('/posts/<string:status>/<int:year>/<int:month>/')
 @admin_bp.route('/posts/<string:status>/')
 @admin_bp.route('/posts/')
 def render_posts(status='public+private', year=None, month=None, tags=None):
