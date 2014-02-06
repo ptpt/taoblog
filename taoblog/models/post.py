@@ -264,9 +264,9 @@ class Post(Base):
                 continue
             if meta and key in ('text', 'content'):
                 continue
-            value = getattr(self, key)
-            if not hasattr(value, '__call__'):
-                post_dict[key] = value
+            if callable(getattr(self, key)):
+                continue
+            post_dict[key] = getattr(self, key)
         return post_dict
 
 
