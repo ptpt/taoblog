@@ -148,47 +148,6 @@ class TestPost(TaoblogTestCase):
             .filter(PostText.text=='the second post').one()
         self.assertEqual(result.text, post.text)
 
-    def test_readers(self):
-        post = Post(title='jim tao peter', text='the text',
-                    slug='jim-tao-peter', author_id=1)
-        self.session.add(post)
-        self.session.commit()
-        from taoblog.models.user import User
-        jim = User(name='Jim',
-                   email='jim@aa.com',
-                   provider='openid',
-                   identity='jim')
-        tao = User(name='Tao',
-                   email='tao@aa.com',
-                   provider='openid',
-                   identity='tao')
-        peter = User(name='Peter',
-                     email='peter@aa.com',
-                     provider='openid',
-                     identity='peter')
-        post.readers = [jim, tao, peter]
-        self.assertEqual(post.status, Post.STATUS_PRIVATE)
-        self.assertEqual(set(self.session.query(User).all()), {jim, tao, peter})
-        post2 = Post(title='jim tao', text='text',
-                     slug='jim-tao', author_id=1)
-        self.assertEqual(post2.status, Post.STATUS_PUBLIC)
-        dude = User(name='Dude',
-                    email='dude@aa.com',
-                    provider='openid',
-                    identity='dude')
-        post2.readers = [jim, tao, dude]
-        self.assertEqual(post2.status, Post.STATUS_PRIVATE)
-        self.assertEqual(set(self.session.query(User).all()), {jim, tao, dude, peter})
-        self.assertEqual(set(peter.posts), {post})
-        self.assertEqual(set(jim.posts), {post, post2})
-        self.assertEqual(set(dude.posts), {post2})
-        playboy = User(name='Playboy',
-                       email='play@aa.com',
-                       provider='openid',
-                       identity='playboy')
-        self.session.add(playboy)
-        self.assertEqual(playboy.posts, [])
-
 
 class TestPostOperator(TaoblogTestCase):
     def setUp(self):

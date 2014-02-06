@@ -16,9 +16,6 @@ from . import Base, ModelError
 post_tag_table = Table('_post_tag', Base.metadata,
                        Column('post_id', Integer, ForeignKey('post.id')),
                        Column('tag_id', Integer, ForeignKey('tag.id')))
-post_readers_table = Table('_post_readers', Base.metadata,
-                           Column('post_id', Integer, ForeignKey('post.id')),
-                           Column('user_id', Integer, ForeignKey('user.id')))
 
 
 class PostError(ModelError):
@@ -105,19 +102,6 @@ class Post(Base):
             return self._content.content
         else:
             return None
-
-    ################ readers ################
-    _readers = relationship('User', secondary=post_readers_table,
-                            backref='posts')
-
-    @property
-    def readers(self):
-        return self._readers
-
-    @readers.setter
-    def readers(self, new_readers):
-        self.status = Post.STATUS_PRIVATE
-        self._readers = new_readers
 
     ################ tags ################
     _tags = Column('tags', String)
